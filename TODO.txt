@@ -1,0 +1,19 @@
+sign in {
+    check student
+    check teacher
+    insert code? 
+}
+
+login {
+    student area {
+        access files to download
+    }
+    teacher area {
+        create classes 
+        area to upload files
+    }
+}
+
+no login page {
+    schools info etc
+}
