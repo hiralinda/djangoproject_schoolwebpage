@@ -1,0 +1,30 @@
+{% extends "hira/layout.html" %}
+
+{% block body %}
+
+<div class="container">
+    <h2 style="text-align: center;">INDEX.HTML</h2>
+</div>
+
+<h1>Welcome to the Home Page</h1>
+    
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.username }}!</p>
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+        
+        {% if user.profile.is_teacher %}
+            <p>You are logged in as a Teacher.</p>
+            <p><a href="{% url 'teacher_home' %}">Go to Teacher Dashboard</a></p>
+        {% else %}
+            <p>You are logged in as a Student.</p>
+            <p><a href="{% url 'student_home' %}">Go to Student Dashboard</a></p>
+        {% endif %}
+        
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a></p>
+        <p><a href="{% url 'signup' %}">Sign Up</a></p>
+    {% endif %}
+{% endblock %}
