@@ -1,16 +1,58 @@
 {% extends "hira/layout.html" %}
 
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
 {% block title %}
     Login
 {% endblock %}
 
 {% block body %}
-    <h1>Login</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
-    <p><a href="{% url 'signup' %}">Sign Up</a></p>
-</body>
+<div class="login-container">
+    <div class="login-header">
+        <h2>Login</h2>
+    </div>
+
+    <div class="login-form-container">
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    <div class="field-wrapper">
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <p class="error-message">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="form-group">
+                <button type="submit" class="submit-button">
+                    Login
+                </button>
+            </div>
+        </form>
+
+        <div class="signup-prompt">
+            <div class="separator">
+                <span>Don't have an account?</span>
+            </div>
+
+            <div class="signup-link-wrapper">
+                <a href="{% url 'signup' %}" class="signup-link">
+                    Sign Up
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

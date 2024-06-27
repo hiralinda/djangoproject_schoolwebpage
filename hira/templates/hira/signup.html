@@ -1,15 +1,101 @@
 {% extends "hira/layout.html" %}
 
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
 {% block title %}
     Sign up
 {% endblock %}
 
 {% block body %}
-    <h1>Sign Up</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Sign Up</button>
-    </form>
-    <p><a href="{% url 'login' %}">Login</a></p>
+<div class="login-container">
+    <div class="login-header">
+        <h2>Sign Up</h2>
+    </div>
+
+    <div class="login-form-container">
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    {% for error in form.password1.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    {% for error in form.password2.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Sign up as:</label>
+                <div class="radio-group">
+                    {% for radio in form.user_type %}
+                        <label class="radio-label">
+                            {{ radio.tag }}
+                            <span>{{ radio.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.user_type.errors %}
+                    {% for error in form.user_type.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.access_code.id_for_label }}">{{ form.access_code.label }}</label>
+                {{ form.access_code }}
+                {% if form.access_code.errors %}
+                    {% for error in form.access_code.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+                <p class="help-text">{{ form.access_code.help_text }}</p>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="submit-button">
+                    Sign Up
+                </button>
+            </div>
+        </form>
+
+        <div class="signup-prompt">
+            <div class="separator">
+                <span>Already have an account?</span>
+            </div>
+
+            <div class="signup-link-wrapper">
+                <a href="{% url 'login' %}" class="signup-link">
+                    Log in
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

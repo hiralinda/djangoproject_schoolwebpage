@@ -1,0 +1,71 @@
+// Custom styles
+
+// Variables
+$primary-color: #3b82f6;
+$secondary-color: #1f2937;
+
+// Mixins
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+// Navbar styles
+.hamburger {
+    cursor: pointer;
+    
+    .bar {
+      display: block;
+      width: 25px;
+      height: 3px;
+      margin: 5px auto;
+      background-color: white;
+      @include transition;
+    }
+  
+    &.active {
+      .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      .bar:nth-child(2) {
+        opacity: 0;
+      }
+      .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+    }
+  }
+  
+  .mobile-menu {
+    @include transition(max-height);
+    max-height: 0;
+    overflow: hidden;
+    
+    &.active {
+      max-height: 300px;
+    }
+  }
+  
+
+// Feature card styles
+.feature-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  @include transition(transform);
+  
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+// CTA button styles
+.cta {
+  a {
+    @include transition(background-color);
+    
+    &:hover {
+      background-color: darken(white, 10%);
+    }
+  }
+}

@@ -1,0 +1,49 @@
+.hamburger {
+  cursor: pointer;
+}
+.hamburger .bar {
+  display: block;
+  width: 25px;
+  height: 3px;
+  margin: 5px auto;
+  background-color: white;
+  transition: all 0.3s ease;
+}
+.hamburger.active .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.hamburger.active .bar:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+.mobile-menu {
+  transition: max-height 0.3s ease;
+  max-height: 0;
+  overflow: hidden;
+}
+.mobile-menu.active {
+  max-height: 300px;
+}
+
+.feature-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  transition: transform 0.3s ease;
+}
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.cta a {
+  transition: background-color 0.3s ease;
+}
+.cta a:hover {
+  background-color: #e6e6e6;
+}
+
+/*# sourceMappingURL=styles.css.map */
