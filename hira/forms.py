@@ -18,3 +18,32 @@ class CustomUserCreationForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['access_code'].widget.attrs.update({'class': 'form-input'})
+
+        from django import forms
+from .models import Profile, TeacherProfile, StudentProfile, CustomUser
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email']
+
+class ProfileUpdateForm(forms.ModelForm):
+    languages = forms.MultipleChoiceField(
+        choices=Profile.LANGUAGE_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    class Meta:
+        model = Profile
+        fields = ['bio', 'languages']
+
+class TeacherProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = TeacherProfile
+        fields = ['certifications', 'years_of_experience', 'specialization', 'education', 'teaching_style']
+
+class StudentProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = StudentProfile
+        fields = ['grade', 'subjects_of_interest', 'learning_goals']

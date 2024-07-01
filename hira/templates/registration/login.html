@@ -27,14 +27,12 @@
                     <div class="field-wrapper">
                         {{ field }}
                     </div>
-                    {% if field.errors %}
-                        {% for error in field.errors %}
-                            <p class="error-message">{{ error }}</p>
-                        {% endfor %}
-                    {% endif %}
                 </div>
-            {% endfor %}
-
+                {% endfor %}
+                
+            {% if message %}
+            <div class="error-message">{{ message }}</div>
+            {% endif %}
             <div class="form-group">
                 <button type="submit" class="submit-button">
                     Login

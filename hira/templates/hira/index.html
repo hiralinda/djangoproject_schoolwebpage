@@ -68,6 +68,37 @@
             </div>
         </div>
     </section>
+    
+    <section class="teacher-profiles">
+        <h2>Our Teachers</h2>
+        <div class="teacher-grid">
+            {% for teacher in teachers %}
+                <div class="teacher-card">
+                    {% if teacher.profile.profile_picture %}
+                        <img src="{{ teacher.profile.profile_picture.url }}" alt="{{ teacher.get_full_name }}" class="teacher-avatar">
+                    {% endif %}
+                    <h3>{{ teacher.id }}</h3>
+                    {% if teacher.profile.teacherprofile.specialization %}
+                        <p class="specialization">{{ teacher.profile.teacherprofile.specialization }}</p>
+                    {% endif %}
+                    {% if teacher.profile.bio %}
+                        <p class="bio">{{ teacher.profile.bio|truncatewords:20 }}</p>
+                    {% endif %}
+                    {% if teacher.profile.teacherprofile.years_of_experience %}
+                        <p class="experience">{{ teacher.profile.teacherprofile.years_of_experience }} years of experience</p>
+                    {% endif %}
+                    {% if teacher.profile.languages %}
+                        <p class="languages">Languages: {{ teacher.profile.get_languages_display }}</p>
+                    {% endif %}
+                    <a href="{% url 'profile' teacher.id %}" class="view-profile-btn">View Full Profile</a>
+                </div>
+            {% endfor %}
+        </div>
+        {% if total_teachers > 4 %}
+            <p>more</p>
+            {% comment %} <a href="{% url 'all_teachers' %}" class="view-all-btn">View All Teachers</a> {% endcomment %}
+        {% endif %}
+    </section>
 
     <section class="cta bg-gradient-to-r from-purple-900 to-blue-900 text-white py-20">
         <div class="container mx-auto px-4 text-center">

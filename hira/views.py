@@ -7,6 +7,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import HttpResponseRedirect
+from .models import Profile, CustomUser, TeacherProfile, StudentProfile
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import UserUpdateForm, ProfileUpdateForm, TeacherProfileUpdateForm, StudentProfileUpdateForm
 
 
 # Create your views here.
@@ -14,10 +20,49 @@ from django.http import HttpResponseRedirect
 # request handler
 
 def index(request):
-    return render(request, 'hira/index.html')
+    if request.user.is_authenticated:
+        if request.user.is_teacher:
+            return redirect('teacher_home')
+        elif request.user.is_student:
+            return redirect('student_home')
 
-def home_view(request):
-    return render(request, 'home.html')
+    teachers = CustomUser.objects.filter(user_type='teacher', is_active=True).select_related('profile__teacherprofile')[:4]
+    total_teachers = CustomUser.objects.filter(user_type='teacher', is_active=True).count()
+    
+    context = {
+        'teachers': teachers,
+        'total_teachers': total_teachers,
+    }
+    return render(request, 'hira/index.html', context)
+
+
+def home(request):
+    if request.user.is_authenticated:
+        if request.user.is_teacher:
+            return redirect('teacher_home')
+        elif request.user.is_student:
+            return redirect('student_home')
+
+    teachers = Profile.objects.filter(user__user_type='teacher')
+    print(teachers)
+    return render(request, 'hira/index.html', {'teachers': teachers})
+
+def teacher_home(request):
+    return render(request, 'hira/teacher_home.html')
+
+def student_home(request):
+    return render(request, 'hira/student_home.html')
+
+# def home(request):
+#     if request.user.is_authenticated:
+#         if request.user.profile.is_teacher:
+#             return render(request, 'hira/teacher_home.html')
+#         else:
+#             return render(request, 'hira/student_home.html')
+#     return render(request, 'hira/index.html')
+
+# def home_view(request):
+#     return render(request, 'home.html')
 
 
 def signup(request):
@@ -48,20 +93,6 @@ def validate_access_code(user_type, access_code):
     }
     return access_code in valid_codes.get(user_type, [])
 
-def teacher_home(request):
-    return render(request, 'hira/teacher_home.html')
-
-def student_home(request):
-    return render(request, 'hira/student_home.html')
-
-def home(request):
-    if request.user.is_authenticated:
-        if request.user.profile.is_teacher:
-            return render(request, 'hira/teacher_home.html')
-        else:
-            return render(request, 'hira/student_home.html')
-    return render(request, 'hira/index.html')
-
 def custom_login(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -72,12 +103,87 @@ def custom_login(request):
             if user is not None:
                 login(request, user)
                 return redirect('home')
+            else:
+                # Debugging output
+                print("Authentication failed: Invalid username and/or password.")
+                return render(request, 'hira/login.html', {'form': form, 'message': "Invalid username and/or password."})
     else:
         form = AuthenticationForm()
+    # Debugging output
+    print("Rendering login form.")
     return render(request, 'hira/login.html', {'form': form})
+
 
 def custom_logout(request):
     if request.method == 'POST' or request.method == 'GET':
         logout(request)
         return redirect('home')  
 
+
+@login_required
+def edit_profile(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        
+        if request.user.user_type == 'teacher':
+            teacher_profile, created = TeacherProfile.objects.get_or_create(profile=profile)
+            specific_form = TeacherProfileUpdateForm(request.POST, instance=teacher_profile)
+        elif request.user.user_type == 'student':
+            student_profile, created = StudentProfile.objects.get_or_create(profile=profile)
+            specific_form = StudentProfileUpdateForm(request.POST, instance=student_profile)
+        else:
+            specific_form = None
+        
+        if user_form.is_valid() and profile_form.is_valid() and (specific_form is None or specific_form.is_valid()):
+            user_form.save()
+            profile_form.save()
+            if specific_form:
+                specific_form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('profile')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=profile)
+        
+        if request.user.user_type == 'teacher':
+            teacher_profile, created = TeacherProfile.objects.get_or_create(profile=profile)
+            specific_form = TeacherProfileUpdateForm(instance=teacher_profile)
+        elif request.user.user_type == 'student':
+            student_profile, created = StudentProfile.objects.get_or_create(profile=profile)
+            specific_form = StudentProfileUpdateForm(instance=student_profile)
+        else:
+            specific_form = None
+    
+    context = {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'specific_form': specific_form
+    }
+    return render(request, 'hira/edit_profile.html', context)
+
+@login_required
+def profile(request):
+    try:
+        profile = request.user.profile
+    except Profile.DoesNotExist:
+        profile = Profile.objects.create(user=request.user)
+
+    if request.user.user_type == 'teacher':
+        specific_profile, created = TeacherProfile.objects.get_or_create(profile=profile)
+    elif request.user.user_type == 'student':
+        specific_profile, created = StudentProfile.objects.get_or_create(profile=profile)
+    else:
+        specific_profile = None
+
+    context = {
+        'user': request.user,
+        'profile': profile,
+        'specific_profile': specific_profile
+    }
+    return render(request, 'hira/profile.html', context)

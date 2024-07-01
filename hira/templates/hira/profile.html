@@ -1,0 +1,24 @@
+{% extends 'hira/layout.html' %}
+
+{% block body %}
+<h2>{{ user.get_full_name }}'s Profile</h2>
+{% comment %} <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture"> {% endcomment %}
+<p><strong>Bio:</strong> {{ user.profile.bio }}</p>
+<p><strong>Languages:</strong> {{ user.profile.get_languages_display }}</p>
+
+{% if user.user_type == 'teacher' %}
+    <h3>Teacher Information</h3>
+    <p><strong>Certifications:</strong> {{ user.profile.teacherprofile.certifications }}</p>
+    <p><strong>Years of Experience:</strong> {{ user.profile.teacherprofile.years_of_experience }}</p>
+    <p><strong>Specialization:</strong> {{ user.profile.teacherprofile.specialization }}</p>
+    <p><strong>Education:</strong> {{ user.profile.teacherprofile.education }}</p>
+    <p><strong>Teaching Style:</strong> {{ user.profile.teacherprofile.teaching_style }}</p>
+{% else %}
+    <h3>Student Information</h3>
+    <p><strong>Grade:</strong> {{ user.profile.studentprofile.get_grade_display }}</p>
+    <p><strong>Subjects of Interest:</strong> {{ user.profile.studentprofile.subjects_of_interest }}</p>
+    <p><strong>Learning Goals:</strong> {{ user.profile.studentprofile.learning_goals }}</p>
+{% endif %}
+
+<a href="{% url 'edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+{% endblock %}

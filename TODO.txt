@@ -1,8 +1,4 @@
-sign in {
-    check student
-    check teacher
-    insert code? 
-}
+
 
 login {
     student area {
@@ -14,6 +10,13 @@ login {
     }
 }
 
-no login page {
-    schools info etc
+student dashboar {
+    have access to teachers profile
+    filtered by language
 }
+
+teachers {
+    can update their profiles 
+}
+
+login alert message 
