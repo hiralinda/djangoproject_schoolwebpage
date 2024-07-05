@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
 from .forms import CustomUserCreationForm
 from django.contrib.auth import logout
 from django.shortcuts import redirect
@@ -167,23 +168,38 @@ def edit_profile(request):
     }
     return render(request, 'hira/edit_profile.html', context)
 
+# @login_required
+# def profile(request):
+#     try:
+#         profile = request.user.profile
+#     except Profile.DoesNotExist:
+#         profile = Profile.objects.create(user=request.user)
+
+#     if request.user.user_type == 'teacher':
+#         specific_profile, created = TeacherProfile.objects.get_or_create(profile=profile)
+#     elif request.user.user_type == 'student':
+#         specific_profile, created = StudentProfile.objects.get_or_create(profile=profile)
+#     else:
+#         specific_profile = None
+
+#     context = {
+#         'user': request.user,
+#         'profile': profile,
+#         'specific_profile': specific_profile
+#     }
+#     return render(request, 'hira/profile.html', context)
+
+def profile(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+    user_profile = get_object_or_404(Profile, user=user)
+    return render(request, 'hira/profile.html', {'user': user, 'profile': user_profile})
+
 @login_required
-def profile(request):
-    try:
-        profile = request.user.profile
-    except Profile.DoesNotExist:
-        profile = Profile.objects.create(user=request.user)
+def browse_teachers(request):
+    teachers = Profile.objects.filter(user__user_type='teacher')
+    return render(request, 'hira/browse_teachers.html', {'teachers': teachers})
 
-    if request.user.user_type == 'teacher':
-        specific_profile, created = TeacherProfile.objects.get_or_create(profile=profile)
-    elif request.user.user_type == 'student':
-        specific_profile, created = StudentProfile.objects.get_or_create(profile=profile)
-    else:
-        specific_profile = None
-
-    context = {
-        'user': request.user,
-        'profile': profile,
-        'specific_profile': specific_profile
-    }
-    return render(request, 'hira/profile.html', context)
+@login_required
+def inbox(request):
+    # Placeholder for chat functionality
+    return render(request, 'hira/inbox.html')

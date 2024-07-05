@@ -6,13 +6,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}HiraSchool{% endblock %}</title>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+
         <link href="{% static '/css/styles.css' %}" rel="stylesheet">
         
         <script src="{% static '/js/script.js' %}" defer></script>
         {% block extra_head %}{% endblock %}
     </head>
-    <body>
-        <header class="fixed top-2 left-0 right-0 bg-gray-800 text-white z-50 navbar-glow">
+    <body class="flex flex-col min-h-screen">
+        <header class="sticky left-0 right-0 bg-gray-800 text-white z-50 navbar-glow">
             <nav class="container mx-auto px-4 py-4 flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <a href="#" class="text-xl font-bold">Logo</a>
@@ -31,6 +34,7 @@
                         {% elif user.is_student %}
                             <a href="{% url 'student_home' %}" class="hover:text-gray-300">Student Dashboard</a>
                         {% endif %}
+                        <a href="{% url 'profile' user.id %}">My Profile</a>
                         <a href="{% url 'edit_profile' %}">Edit Profile</a>
                         <form action="{% url 'logout' %}" method="post" class="inline">
                             {% csrf_token %}
@@ -70,14 +74,17 @@
                 {% endif %}
             </div>
         </header>
-        {% block body %}
-        {% endblock %}
+        <main class="flex-grow">
+            {% block body %}
+            {% endblock %}
+        </main>
+        <div class="section-separator"></div>
+        <footer class="bg-gray-800 text-white py-4">
+            <div class="container mx-auto px-4 text-center">
+                <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+            </div>
+        </footer>
     </body>
-    <div class="section-separator"></div>
-    <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2024 Your Company Name. All rights reserved.</p>
-        </div>
-    </footer>
-    
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 </html>

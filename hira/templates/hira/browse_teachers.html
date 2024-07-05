@@ -1,0 +1,44 @@
+{% extends "hira/layout.html" %}
+
+{% block title %}
+    Browse Teachers
+{% endblock %}
+
+{% block body %}
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8">Browse Teachers</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for teacher in teachers %}
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold text-blue-600 mb-2">
+                            <a href="{% url 'profile' teacher.user.id %}" class="hover:underline">
+                                {{ teacher.user.username }}
+                            </a>
+                        </h2>
+                        {% if teacher.profile_picture %}
+                            <img src="{{ teacher.profile_picture.url }}" alt="{{ teacher.user.username }}" class="w-24 h-24 rounded-full mx-auto mb-4 object-cover">
+                        {% else %}
+                            <div class="w-24 h-24 rounded-full mx-auto mb-4 bg-gray-300 flex items-center justify-center">
+                                <span class="text-2xl text-gray-600">{{ teacher.user.username|first|upper }}</span>
+                            </div>
+                        {% endif %}
+                        <p class="text-gray-600 mb-4">{{ teacher.bio|truncatewords:30 }}</p>
+                        {% if teacher.specialization %}
+                            <p class="text-sm text-gray-500 mb-2"><span class="font-semibold">Specialization:</span> {{ teacher.specialization }}</p>
+                        {% endif %}
+                        {% if teacher.years_of_experience %}
+                            <p class="text-sm text-gray-500"><span class="font-semibold">Experience:</span> {{ teacher.years_of_experience }} years</p>
+                        {% endif %}
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4">
+                        <a href="{% url 'profile' teacher.user.id %}" class="text-blue-600 hover:text-blue-800 font-medium">View Full Profile</a>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-gray-600 col-span-full text-center">No teachers found at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
