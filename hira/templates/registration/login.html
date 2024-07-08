@@ -30,15 +30,22 @@
                 </div>
                 {% endfor %}
                 
-            {% if message %}
-            <div class="error-message">{{ message }}</div>
-            {% endif %}
+            
             <div class="form-group">
                 <button type="submit" class="submit-button">
                     Login
                 </button>
             </div>
         </form>
+
+            {% if messages %}
+            <div class="error-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
 
         <div class="signup-prompt">
             <div class="separator">

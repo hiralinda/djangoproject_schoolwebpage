@@ -25,7 +25,8 @@
             <p class="text-gray-600"><strong class="text-gray-700">Education:</strong> {{ user.profile.teacherprofile.education }}</p>
             <p class="text-gray-600"><strong class="text-gray-700">Teaching Style:</strong> {{ user.profile.teacherprofile.teaching_style }}</p>
         </div>
-    {% else %}
+        {% else %}
+        
         <div class="mb-6">
             <h3 class="text-xl font-semibold mb-2 text-gray-700">Student Information</h3>
             <p class="text-gray-600"><strong class="text-gray-700">Grade:</strong> {{ user.profile.studentprofile.get_grade_display }}</p>
@@ -33,8 +34,15 @@
             <p class="text-gray-600"><strong class="text-gray-700">Learning Goals:</strong> {{ user.profile.studentprofile.learning_goals }}</p>
         </div>
     {% endif %}
-
-    {% if user == request.user %}
+    {% if user.is_authenticated and not user.user_type == 'teacher' and not request.user.id == profile.user.id %}
+    <form action="{% url 'send_message' profile.user.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            Contact {{ profile.user.username }}
+        </button>
+    </form>
+    {% endif %}
+    {% if profile.user.id == request.user.id %}
     <a href="{% url 'edit_profile' %}" class="inline-block px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300">Edit Profile</a>
     {% endif %}
 </div>

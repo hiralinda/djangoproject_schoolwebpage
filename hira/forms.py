@@ -1,7 +1,8 @@
+from .models import Profile, TeacherProfile, StudentProfile, CustomUser
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from hira.models import CustomUser
+from hira.models import CustomUser, Message
 
 class CustomUserCreationForm(UserCreationForm):
     USER_TYPES = [
@@ -9,18 +10,16 @@ class CustomUserCreationForm(UserCreationForm):
         ('teacher', 'Teacher'),
     ]
     user_type = forms.ChoiceField(choices=USER_TYPES, widget=forms.RadioSelect)
-    access_code = forms.CharField(max_length=50, required=True, help_text='Enter your student or teacher access code')
+    # access_code = forms.CharField(max_length=50, required=True, help_text='Enter your student or teacher access code')
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'password1', 'password2', 'user_type', 'access_code')
+        fields = ('username', 'password1', 'password2', 'user_type',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['access_code'].widget.attrs.update({'class': 'form-input'})
+        # self.fields['access_code'].widget.attrs.update({'class': 'form-input'})
 
-        from django import forms
-from .models import Profile, TeacherProfile, StudentProfile, CustomUser
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
@@ -38,6 +37,16 @@ class ProfileUpdateForm(forms.ModelForm):
         model = Profile
         fields = ['bio', 'languages']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+            })
+        self.fields['bio'].widget.attrs.update({
+            'class': 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+        })
+        
 class TeacherProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = TeacherProfile
@@ -47,3 +56,9 @@ class StudentProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = StudentProfile
         fields = ['grade', 'subjects_of_interest', 'learning_goals']
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['receiver', 'message']

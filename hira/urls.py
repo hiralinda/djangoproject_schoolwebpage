@@ -16,4 +16,7 @@ urlpatterns = [
     path('edit_profile/', views.edit_profile, name='edit_profile'),
     path('browse_teachers/', views.browse_teachers, name='browse_teachers'),  # Browse teachers
     path('inbox/', views.inbox, name='inbox'),  # Inbox
+    path('inbox/', views.inbox, name='inbox'),  # Inbox
+    path('inbox/<int:user_id>/', views.inbox, name='inbox'),  # Inbox with conversation
+    path('send_message/<int:user_id>/', views.send_message, name='send_message'),
 ]

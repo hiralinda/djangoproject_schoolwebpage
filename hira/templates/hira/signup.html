@@ -67,7 +67,7 @@
                 {% endif %}
             </div>
 
-            <div class="form-group">
+            {% comment %} <div class="form-group">
                 <label for="{{ form.access_code.id_for_label }}">{{ form.access_code.label }}</label>
                 {{ form.access_code }}
                 {% if form.access_code.errors %}
@@ -76,7 +76,7 @@
                     {% endfor %}
                 {% endif %}
                 <p class="help-text">{{ form.access_code.help_text }}</p>
-            </div>
+            </div> {% endcomment %}
 
             <div class="form-group">
                 <button type="submit" class="submit-button">

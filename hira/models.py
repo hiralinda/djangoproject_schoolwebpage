@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
         ('teacher', 'Teacher'),
     ]
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
-    access_code = models.CharField(max_length=50)
+    # access_code = models.CharField(max_length=50)
 
     @property
     def is_teacher(self):
@@ -60,3 +60,13 @@ class StudentProfile(models.Model):
     grade = models.CharField(max_length=2, choices=GRADE_CHOICES, blank=True)
     subjects_of_interest = models.TextField(blank=True, help_text="List subjects you're interested in, separated by commas")
     learning_goals = models.TextField(blank=True, help_text="Describe your learning goals")
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Message from {self.sender.username} to {self.receiver.username}'
