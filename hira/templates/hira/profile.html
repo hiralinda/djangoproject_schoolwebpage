@@ -2,38 +2,35 @@
 
 {% block body %}
 <div class="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
-    <h2 class="text-3xl font-bold mb-6 text-gray-800">{{ user.get_full_name }}'s Profile</h2>
-    
-    {% comment %}
-    <div class="mb-6">
-        <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover mx-auto">
-    </div>
-    {% endcomment %}
-    
-    <div class="mb-6">
-        <h3 class="text-xl font-semibold mb-2 text-gray-700">About</h3>
-        <p class="text-gray-600"><strong class="text-gray-700">Bio:</strong> {{ user.profile.bio }}</p>
-        <p class="text-gray-600 mt-2"><strong class="text-gray-700">Languages:</strong> {{ user.profile.get_languages_display }}</p>
-    </div>
-
-    {% if user.user_type == 'teacher' %}
-        <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2 text-gray-700">Teacher Information</h3>
-            <p class="text-gray-600"><strong class="text-gray-700">Certifications:</strong> {{ user.profile.teacherprofile.certifications }}</p>
-            <p class="text-gray-600"><strong class="text-gray-700">Years of Experience:</strong> {{ user.profile.teacherprofile.years_of_experience }}</p>
-            <p class="text-gray-600"><strong class="text-gray-700">Specialization:</strong> {{ user.profile.teacherprofile.specialization }}</p>
-            <p class="text-gray-600"><strong class="text-gray-700">Education:</strong> {{ user.profile.teacherprofile.education }}</p>
-            <p class="text-gray-600"><strong class="text-gray-700">Teaching Style:</strong> {{ user.profile.teacherprofile.teaching_style }}</p>
-        </div>
-        {% else %}
+   
+    <div class="max-w-4xl mx-auto py-8">
+        <h2 class="text-2xl font-bold mb-4">Profile of {{ profile.user.username }}</h2>
         
-        <div class="mb-6">
-            <h3 class="text-xl font-semibold mb-2 text-gray-700">Student Information</h3>
-            <p class="text-gray-600"><strong class="text-gray-700">Grade:</strong> {{ user.profile.studentprofile.get_grade_display }}</p>
-            <p class="text-gray-600"><strong class="text-gray-700">Subjects of Interest:</strong> {{ user.profile.studentprofile.subjects_of_interest }}</p>
-            <p class="text-gray-600"><strong class="text-gray-700">Learning Goals:</strong> {{ user.profile.studentprofile.learning_goals }}</p>
+        <div class="bg-white shadow-md rounded p-6 mb-6">
+          <h3 class="text-xl font-semibold mb-4">Basic Information</h3>
+          <p><strong>Username:</strong> {{ profile.user.username }}</p>
+          <p><strong>Bio:</strong> {{ profile.bio }}</p>
+          <p><strong>Languages:</strong> {{ profile.get_languages_display }}</p>
         </div>
-    {% endif %}
+    
+        {% if profile.user.is_teacher %}
+        <div class="bg-white shadow-md rounded p-6 mb-6">
+          <h3 class="text-xl font-semibold mb-4">Teacher Information</h3>
+          <p><strong>Certifications:</strong> {{ profile.certifications }}</p>
+          <p><strong>Years of Experience:</strong> {{ profile.years_of_experience }}</p>
+          <p><strong>Specialization:</strong> {{ profile.specialization }}</p>
+          <p><strong>Education:</strong> {{ profile.education }}</p>
+          <p><strong>Teaching Style:</strong> {{ profile.teaching_style }}</p>
+        </div>
+        {% elif profile.user.is_student %}
+        <div class="bg-white shadow-md rounded p-6 mb-6">
+          <h3 class="text-xl font-semibold mb-4">Student Information</h3>
+          <p><strong>Grade:</strong> {{ profile.get_grade_display }}</p>
+          <p><strong>Subjects of Interest:</strong> {{ profile.subjects_of_interest }}</p>
+          <p><strong>Learning Goals:</strong> {{ profile.learning_goals }}</p>
+        </div>
+        {% endif %}
+      </div>
     {% if user.is_authenticated and not user.user_type == 'teacher' and not request.user.id == profile.user.id %}
     <form action="{% url 'send_message' profile.user.id %}" method="post">
         {% csrf_token %}

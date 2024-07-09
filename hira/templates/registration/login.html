@@ -19,34 +19,38 @@
     <div class="login-form-container">
         <form method="post" class="login-form">
             {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                    </label>
-                    <div class="field-wrapper">
-                        {{ field }}
-                    </div>
-                </div>
+            {% if form.non_field_errors %}
+              <div class="form-group non-field-errors">
+                {% for error in form.non_field_errors %}
+                  <p class="error">{{ error }}</p>
                 {% endfor %}
-                
+              </div>
+            {% endif %}
+            {% for field in form %}
+              <div class="form-group{% if field.errors %} has-error{% endif %}">
+                <label for="{{ field.id_for_label }}">
+                  {{ field.label }}
+                </label>
+                <div class="field-wrapper">
+                  {{ field }}
+                  {% if field.help_text %}
+                    <p class="help-text">{{ field.help_text }}</p>
+                  {% endif %}
+                  {% for error in field.errors %}
+                        <p class="error-message">{{ error }}</p> 
+                        {% comment %} error not appearing in red!! {% endcomment %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
             
             <div class="form-group">
-                <button type="submit" class="submit-button">
-                    Login
-                </button>
+              <button type="submit" class="submit-button">
+                Login
+              </button>
             </div>
-        </form>
-
-            {% if messages %}
-            <div class="error-message">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-
+          </form>
+        
         <div class="signup-prompt">
             <div class="separator">
                 <span>Don't have an account?</span>

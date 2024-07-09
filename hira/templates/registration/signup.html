@@ -67,17 +67,6 @@
                 {% endif %}
             </div>
 
-            {% comment %} <div class="form-group">
-                <label for="{{ form.access_code.id_for_label }}">{{ form.access_code.label }}</label>
-                {{ form.access_code }}
-                {% if form.access_code.errors %}
-                    {% for error in form.access_code.errors %}
-                        <p class="error-message">{{ error }}</p>
-                    {% endfor %}
-                {% endif %}
-                <p class="help-text">{{ form.access_code.help_text }}</p>
-            </div> {% endcomment %}
-
             <div class="form-group">
                 <button type="submit" class="submit-button">
                     Sign Up
@@ -98,4 +87,6 @@
         </div>
     </div>
 </div>
+
+
 {% endblock %}

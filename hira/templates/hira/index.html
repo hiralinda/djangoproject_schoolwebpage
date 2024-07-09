@@ -69,34 +69,33 @@
         </div>
     </section>
     
+
     <section class="teacher-profiles py-16">
         <h2 class="text-3xl font-bold mb-12 text-center text-white">Our Teachers</h2>
-        <div class="teacher-carousel">
+        <div class="teacher-carousel flex flex-wrap justify-center" >
             {% for teacher in teachers %}
-                <div class="teacher-card">
-                    <div class="teacher-card-inner">
+                <div class="teacher-card bg-white shadow-md rounded-lg overflow-hidden flex-shrink">
+                    <div class="teacher-card-inner p-4">
+                        <!-- Display profile picture -->
                         {% if teacher.profile.profile_picture %}
-                            <img src="{{ teacher.profile.profile_picture.url }}" alt="{{ teacher.get_full_name }}" class="teacher-avatar">
+                            <img src="{{ teacher.profile.profile_picture.url }}" alt="{{ teacher.get_full_name }}" class="teacher-avatar w-32 h-32 rounded-full object-cover mx-auto">
+                        {% else %}
+                            <div class="teacher-avatar w-32 h-32 rounded-full bg-gray-300 mx-auto"></div>
                         {% endif %}
-                        <h3>{{ teacher.id }}</h3>
-                        {% if teacher.profile.teacherprofile.specialization %}
-                            <p class="specialization">{{ teacher.profile.teacherprofile.specialization }}</p>
-                        {% endif %}
+                        <!-- Display teacher's name -->
+                        <h3 class="text-xl font-semibold text-center mt-4">{{ teacher.get_full_name }}</h3>
+                        <!-- Display bio if available -->
                         {% if teacher.profile.bio %}
-                            <p class="bio">{{ teacher.profile.bio|truncatewords:20 }}</p>
+                            <p class="bio text-center text-white mt-2">{{ teacher.profile.bio|truncatewords:20 }}</p>
                         {% endif %}
-                        {% if teacher.profile.teacherprofile.years_of_experience %}
-                            <p class="experience">{{ teacher.profile.teacherprofile.years_of_experience }} years of experience</p>
-                        {% endif %}
-                        {% if teacher.profile.languages %}
-                            <p class="languages">Languages: {{ teacher.profile.get_languages_display }}</p>
-                        {% endif %}
-                        <a href="{% url 'profile' teacher.id %}" class="view-profile-btn">View Full Profile</a>
+                        <!-- Link to full profile -->
+                        <a href="{% url 'profile' teacher %}" class="view-profile-btn block mt-4 text-center bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-700">View Full Profile</a>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </section>
+
 
     <section class="cta bg-gradient-to-r from-purple-900 to-blue-900 text-white py-20">
         <div class="container mx-auto px-4 text-center">

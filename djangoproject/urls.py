@@ -23,4 +23,5 @@ urlpatterns = [
     path('hira/', include('hira.urls')),
     path('', index, name='index'),
     path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/', include('hira.urls')),
 ]

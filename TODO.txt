@@ -1,22 +1,9 @@
+clean edit profile fields for student/ teacher
 
+upload picture profile
 
-login {
-    student area {
-        access files to download
-    }
-    teacher area {
-        create classes 
-        area to upload files
-    }
-}
+insert name and last name on edit profile
 
-student dashboar {
-    have access to teachers profile
-    filtered by language
-}
+carroussel with different sizes
 
-teachers {
-    can update their profiles 
-}
-
-login alert message 
+error message red

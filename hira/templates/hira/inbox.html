@@ -60,13 +60,13 @@
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <p class="text-gray-600 text-center">Select a conversation or start <a href="{% url 'browse_teachers' %}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">a new one.</a></p>
+                            <p class="text-gray-600 text-center">Select a conversation {% if user.is_student %}or start <a href="{% url 'browse_teachers' %}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">a new one.{% endif %}</a></p>
                         {% endif %}
                     </div>
                     <div class="p-4 bg-gray-50 border-t border-gray-200">
                         <form method="post" class="flex space-x-2">
                             {% csrf_token %}
-                            <input type="text" name="message" autofocus placeholder="Type a message..." class="flex-1 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" required>
+                            <input type="text" name="message" autofocus placeholder="Type a message..." class="p-2 flex-1 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" required>
                             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                 Send
                             </button>
