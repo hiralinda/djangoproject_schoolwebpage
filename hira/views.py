@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
-from .forms import CustomUserCreationForm, ProfileUpdateForm
-from .models import Profile, CustomUser, Message
+from .forms import CustomUserCreationForm, ProfileUpdateForm, AvailabilityForm
+from .models import Profile, CustomUser, Message, Availability
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
@@ -58,7 +58,11 @@ def edit_profile(request):
 
 def profile_view(request, username):
     profile = get_object_or_404(Profile, user__username=username)
-    return render(request, 'hira/profile.html', {'profile': profile})
+    availabilities = profile.availabilities.all().order_by('day')
+    return render(request, 'hira/profile.html', {
+        'profile': profile,
+        'availabilities': availabilities,
+    })
 
 @login_required
 def browse_teachers(request):
@@ -113,3 +117,34 @@ def send_message(request, user_id):
         return redirect('inbox', user_id=recipient.id)
 
     return redirect('profile', user_id=user_id)
+
+
+@login_required
+def availability_view(request):
+    profile = request.user.profile
+    availabilities = {day: None for day, _ in Availability.DAY_CHOICES}
+    for availability in profile.availabilities.all():
+        availabilities[availability.day] = availability
+
+    if request.method == 'POST':
+        day = request.POST.get('day')
+        availability = availabilities[day] or Availability(profile=profile, day=day)
+        form = AvailabilityForm(request.POST, instance=availability)
+        if form.is_valid():
+            form.save()
+            return redirect('availability')
+    else:
+        form = AvailabilityForm()
+
+    return render(request, 'hira/availability.html', {
+        'profile': profile,
+        'availabilities': availabilities,
+        'form': form,
+        'day_choices': Availability.DAY_CHOICES,
+    })
+
+# @login_required
+# def delete_availability(request, day):
+#     availability = get_object_or_404(Availability, profile=request.user.profile, day=day)
+#     availability.delete()
+#     return redirect('availability')

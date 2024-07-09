@@ -1,5 +1,6 @@
 {% extends 'hira/layout.html' %}
 
+{% load custom_filters %}
 {% block body %}
 <div class="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg">
    
@@ -22,6 +23,59 @@
           <p><strong>Education:</strong> {{ profile.education }}</p>
           <p><strong>Teaching Style:</strong> {{ profile.teaching_style }}</p>
         </div>
+       
+        <!-- In templates/teacher_profile.html -->
+        <section class="py-8 px-4 max-w-4xl mx-auto">
+          <h3 class="text-2xl font-bold mb-6">Availability</h3>
+          
+          <div class="grid grid-cols-7 gap-4 mb-8">
+              {% for day, day_name in day_choices %}
+                  <div class="flex flex-col items-center">
+                      <!-- Circle for Day -->
+                      <div class="flex items-center justify-center w-12 h-12 rounded-full 
+                                  {% if profile.availabilities|get_item:day %} bg-blue-500 text-white {% else %} bg-gray-300 text-gray-700 {% endif %}">
+                          <!-- Indicator -->
+                          {% if profile.availabilities|get_item:day %}
+                              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                              </svg>
+                          {% else %}
+                              <span class="text-sm">{{ day_name|slice:":1" }}</span>
+                          {% endif %}
+                      </div>
+                      <!-- Day Name -->
+                      <p class="mt-2 text-sm text-gray-600">{{ day_name }}</p>
+                  </div>
+              {% endfor %}
+          </div>
+          
+          <!-- Availability Details -->
+          <div class="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+              <h4 class="text-xl font-semibold mb-4">Details</h4>
+              <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-100">
+                      <tr>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
+                      </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                      {% for availability in profile.availabilities.all %}
+                          <tr>
+                              <td class="px-6 py-4 whitespace-nowrap">{{ availability.get_day_display }}</td>
+                              <td class="px-6 py-4 whitespace-nowrap">{{ availability.start_time|time:"H:i" }}</td>
+                              <td class="px-6 py-4 whitespace-nowrap">{{ availability.end_time|time:"H:i" }}</td>
+                          </tr>
+                      {% empty %}
+                          <tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">No availability set.</td></tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+      </section>
+      
+
         {% elif profile.user.is_student %}
         <div class="bg-white shadow-md rounded p-6 mb-6">
           <h3 class="text-xl font-semibold mb-4">Student Information</h3>

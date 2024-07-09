@@ -1,0 +1,70 @@
+{% extends "hira/layout.html" %}
+
+{% load custom_filters %}
+
+{% block body %}
+<section class="py-8 px-4 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6">Your Availability</h2>
+
+    {% if user.is_teacher %}
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">Current Availability</h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Day</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
+                        
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for day, day_name in day_choices %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ day_name }}</td>
+                                {% if availabilities|get_item:day %}
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ availabilities|get_item:day|get_attr:"start_time"|time:"H:i" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ availabilities|get_item:day|get_attr:"end_time"|time:"H:i" }}</td>
+                                  
+                                {% else %}
+                                    <td class="px-6 py-4 text-gray-500" colspan="4">Not set</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-2xl font-bold mb-6 text-gray-900">Set/Update Availability</h3>
+            <form method="post" class="bg-white shadow-lg rounded-lg p-8 border border-gray-200">
+                {% csrf_token %}
+                
+                <!-- Add some styling for form elements -->
+                <div class="space-y-4">
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+                            <div class="mt-1">
+                                {{ field }}
+                            </div>
+                            {% if field.help_text %}
+                                <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+        
+                <button type="submit" class="mt-6 w-full bg-blue-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200">
+                    Save Availability
+                </button>
+            </form>
+        </div>
+        
+    {% else %}
+        <p class="text-gray-700">Availability settings are only for teachers.</p>
+    {% endif %}
+</section>
+{% endblock %}

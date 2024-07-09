@@ -7,3 +7,5 @@ insert name and last name on edit profile
 carroussel with different sizes
 
 error message red
+
+just populate the text when click 'contact'

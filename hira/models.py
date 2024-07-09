@@ -57,6 +57,9 @@ class Profile(models.Model):
     def __str__(self):
         return f'Profile of {self.user.username}'
     
+    def get_availability(self):
+        return self.availabilities.all().order_by('day', 'start_time')
+
 
 class Message(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
@@ -66,3 +69,26 @@ class Message(models.Model):
 
     def __str__(self):
         return f'Message from {self.sender.username} to {self.receiver.username}'
+
+class Availability(models.Model):
+    DAY_CHOICES = [
+        ('MON', 'Monday'),
+        ('TUE', 'Tuesday'),
+        ('WED', 'Wednesday'),
+        ('THU', 'Thursday'),
+        ('FRI', 'Friday'),
+        ('SAT', 'Saturday'),
+        ('SUN', 'Sunday'),
+    ]
+
+    profile = models.ForeignKey('Profile', on_delete=models.CASCADE, related_name='availabilities')
+    day = models.CharField(max_length=3, choices=DAY_CHOICES)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    class Meta:
+        verbose_name_plural = 'Availabilities'
+        unique_together = ['profile', 'day']
+
+    def __str__(self):
+        return f"{self.profile.user.username}'s availability on {self.get_day_display()}"

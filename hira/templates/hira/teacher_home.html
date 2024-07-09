@@ -11,12 +11,18 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome, {{ user.username }}!</h1>
         <h2 class="text-xl text-gray-600">Teacher Dashboard</h2>
     </header>
-
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="{% url 'availability' %}" class="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
+            <h3 class="text-xl font-semibold text-blue-600 mb-2">Manage Availability</h3>
+            <p class="text-gray-600">Update your weekly availabilities</p>
+        </a>
 
         <a href="{% url 'inbox' %}" class="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
             <h3 class="text-xl font-semibold text-green-600 mb-2">Inbox</h3>
-            <p class="text-gray-600">Check your messages and communicate with your teachers.</p>
+            <p class="text-gray-600">Check your messages and communicate with your students.</p>
         </a>
     </div>
+
+
 </div>
 {% endblock %}

@@ -2,7 +2,7 @@ from .models import Profile, CustomUser
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from hira.models import CustomUser, Message
+from hira.models import CustomUser, Message, Availability
 
 class CustomUserCreationForm(UserCreationForm):
     USER_TYPES = [
@@ -68,3 +68,22 @@ class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
         fields = ['receiver', 'message']
+
+
+class AvailabilityForm(forms.ModelForm):
+    class Meta:
+        model = Availability
+        fields = ['day', 'start_time', 'end_time']
+        widgets = {
+            'day': forms.Select(attrs={
+                'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+            }),
+            'start_time': forms.TimeInput(attrs={
+                'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'type': 'time'
+            }),
+            'end_time': forms.TimeInput(attrs={
+                'class': 'block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
+                'type': 'time'
+            }),
+        }

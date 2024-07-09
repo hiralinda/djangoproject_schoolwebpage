@@ -22,4 +22,6 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),  # Inbox
     path('inbox/<int:user_id>/', views.inbox, name='inbox'),  # Inbox with conversation
     path('send_message/<int:user_id>/', views.send_message, name='send_message'),
+    path('availability/', views.availability_view, name='availability'),
+    # path('availability/delete/<int:availability_id>/', views.delete_availability, name='delete_availability'),
 ]
