@@ -83,13 +83,13 @@
                             <div class="teacher-avatar w-32 h-32 rounded-full bg-gray-300 mx-auto"></div>
                         {% endif %}
                         <!-- Display teacher's name -->
-                        <h3 class="text-xl font-semibold text-center mt-4">{{ teacher.get_full_name }}</h3>
+                        <h3 class="text-xl font-semibold text-center mt-4">{{ teacher.profile.name }}</h3>
                         <!-- Display bio if available -->
                         {% if teacher.profile.bio %}
                             <p class="bio text-center text-white mt-2">{{ teacher.profile.bio|truncatewords:20 }}</p>
                         {% endif %}
                         <!-- Link to full profile -->
-                        <a href="{% url 'profile' teacher %}" class="view-profile-btn block mt-4 text-center bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-700">View Full Profile</a>
+                        <a href="{% url 'profile' teacher %}" class="block mt-4 bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105">View Full Profile</a>
                     </div>
                 </div>
             {% endfor %}

@@ -14,7 +14,7 @@
                     <div class="p-6">
                         <h2 class="text-xl font-semibold text-blue-600 mb-2">
                             <a href="{% url 'profile' teacher.user.id %}" class="hover:underline">
-                                {{ teacher.user.username }}
+                                {{ teacher.name }}
                             </a>
                         </h2>
                         {% if teacher.profile_picture %}

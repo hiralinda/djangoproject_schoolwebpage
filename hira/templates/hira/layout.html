@@ -25,8 +25,6 @@
                     {% if user.is_authenticated %}
                         <span>Hello, {{ user.username }}!</span>
                         <a href="{% url 'home' %}" class="hover:text-gray-300">{% if user.is_teacher %}Teacher {% elif user.is_student %}Student {% endif %}Dashboard</a>
-                        <a href="{% url 'profile' user.username %}" class="hover:text-gray-300">My Profile</a>
-                        <a href="{% url 'edit_profile' %}" class="hover:text-gray-300">Edit Profile</a>
                         <form action="{% url 'logout' %}" method="post" class="inline">
                             {% csrf_token %}
                             <button type="submit" class="hover:text-gray-300">Logout</button>
@@ -46,8 +44,6 @@
                 {% if user.is_authenticated %}
                     <span class="block py-2 px-4 text-sm">Hello, {{ user.username }}!</span>
                     <a href="{% url 'home' %}" class="block py-2 px-4 text-sm hover:bg-gray-700">{% if user.is_teacher %}Teacher {% elif user.is_student %}Student {% endif %}Dashboard</a>
-                    <a href="{% url 'profile' user.username %}" class="block py-2 px-4 text-sm hover:bg-gray-700" >My Profile</a>
-                    <a href="{% url 'edit_profile' %}" class="block py-2 px-4 text-sm hover:bg-gray-700">Edit Profile</a>
                     <form action="{% url 'logout' %}" method="post" class="block py-2 px-4">
                         {% csrf_token %}
                         <button type="submit" class="text-sm hover:text-gray-300">Logout</button>

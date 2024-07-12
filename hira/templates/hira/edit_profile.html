@@ -1,11 +1,20 @@
 {% extends 'hira/layout.html' %}
 
+{% block title %}
+    Edit Profile
+{% endblock %}
+
 {% block body %}
-{% block content %}
-  <div class="max-w-4xl mx-auto">
-    <h2 class="text-2xl font-bold mb-4">Update Profile</h2>
-    <form method="post" class="bg-white shadow-md rounded p-6" enctype="multipart/form-data">
+<div class="max-w-4xl mx-auto p-8 bg-white shadow-md rounded-lg my-8">
+  <h2 class="text-3xl font-bold mb-6 text-center">Edit Profile</h2>
+
+    <form method="post" class="bg-white rounded-lg space-y-6" enctype="multipart/form-data">
       {% csrf_token %}
+      {% if form.instance.profile_picture %}
+        <div class="flex justify-center mb-6">
+          <img src="{{ form.instance.profile_picture.url }}" alt="Current Profile Picture" class="w-32 h-32 object-cover rounded-full shadow-md">
+        </div>
+      {% endif %}
       {% for field in form %}
         <div class="mb-4{% if field.errors %} has-error{% endif %}">
           <label for="{{ field.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">
@@ -18,12 +27,11 @@
         </div>
       {% endfor %}
       
-      <div class="form-group">
-        <button type="submit" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+      <div class="text-center">
+        <button type="submit" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105">
           Update
         </button>
       </div>
     </form>
   </div>
-{% endblock %}
 {% endblock %}

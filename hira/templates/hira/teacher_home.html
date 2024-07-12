@@ -1,4 +1,4 @@
-{% extends "hira/layout.html" %}
+{% comment %} {% extends "hira/layout.html" %}
 
 {% block title %}
     Teacher's Home
@@ -12,6 +12,16 @@
         <h2 class="text-xl text-gray-600">Teacher Dashboard</h2>
     </header>
     <div class="grid grid-cols-1 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{% url 'profile' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                <h3 class="text-xl font-semibold text-blue-600 mb-2">Profile</h3>
+                <p class="text-gray-600"></p>
+            </a>
+            <a href="{% url 'edit_profile' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                <h3 class="text-xl font-semibold text-green-600 mb-2">Edit Profile</h3>
+                <p class="text-gray-600"></p>
+            </a>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <a href="{% url 'availability' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300">
                 <h3 class="text-xl font-semibold text-blue-600 mb-2">Manage Availability</h3>
@@ -35,4 +45,4 @@
     </div>
 
 </div>
-{% endblock %}
+{% endblock %} {% endcomment %}

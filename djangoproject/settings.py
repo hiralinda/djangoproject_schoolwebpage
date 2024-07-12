@@ -153,3 +153,5 @@ GOOGLE_CLIENT_ID = data['GOOGLE_CLIENT_ID']
 GOOGLE_CLIENT_SECRET = data['GOOGLE_CLIENT_SECRET']
 GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://127.0.0.1:8000/hira/oauth2callback/')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

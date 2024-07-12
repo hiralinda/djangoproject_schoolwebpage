@@ -4,13 +4,19 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from hira.models import CustomUser, Message, Availability
 
+from django.core.validators import EmailValidator
 class CustomUserCreationForm(UserCreationForm):
     USER_TYPES = [
         ('student', 'Student'),
         ('teacher', 'Teacher'),
     ]
     user_type = forms.ChoiceField(choices=USER_TYPES, widget=forms.RadioSelect)
-
+    email = forms.EmailField(
+        label='Email',
+        max_length=254,
+        validators=[EmailValidator()],
+        widget=forms.EmailInput(attrs={'placeholder': 'Enter your email'})
+    )
     class Meta:
         model = CustomUser
         fields = ('email', 'username', 'password1', 'password2', 'user_type',)
@@ -19,49 +25,50 @@ class CustomUserCreationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
 
 class ProfileUpdateForm(forms.ModelForm):
-    languages = forms.MultipleChoiceField(
-        choices=Profile.LANGUAGE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
+    profile_picture = forms.ImageField(required=False, widget=forms.FileInput)
+    # languages = forms.MultipleChoiceField(
+    #     choices=Profile.LANGUAGE_CHOICES,
+    #     widget=forms.CheckboxSelectMultiple,
+    #     required=False
+    # )
 
     class Meta:
         model = Profile
         fields = [
-            'bio', 'languages', 
+            'name', 'profile_picture', 'bio', 
             'certifications', 'years_of_experience', 'specialization', 'education', 'teaching_style', 
             'grade', 'subjects_of_interest', 'learning_goals'
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({
-                'class': 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
-            })
-        self.fields['bio'].widget.attrs.update({
-            'class': 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
-        })
-
-    def clean(self):
-        cleaned_data = super().clean()
         user_type = self.instance.user.user_type
 
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.FileInput):
+                field.widget.attrs.update({
+                    'class': 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                })
+            else:
+                field.widget.attrs.update({
+                    'class': 'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500'
+                })
+
         if user_type == 'teacher':
-            self.fields['certifications'].required = False
-            self.fields['years_of_experience'].required = False
-            self.fields['specialization'].required = False
-            self.fields['education'].required = False
-            self.fields['teaching_style'].required = False
-       
+            # Remove student-specific fields
+            for field in ['grade', 'subjects_of_interest', 'learning_goals']:
+                if field in self.fields:
+                    del self.fields[field]
         elif user_type == 'student':
-            
-            self.fields['grade'].required = False
-            self.fields['subjects_of_interest'].required = False
-            self.fields['learning_goals'].required = False
+            # Remove teacher-specific fields
+            for field in ['certifications', 'years_of_experience', 'specialization', 'education', 'teaching_style']:
+                if field in self.fields:
+                    del self.fields[field]
         else:
             raise forms.ValidationError("Invalid user type.")
 
+    def clean(self):
+        cleaned_data = super().clean()
         return cleaned_data
 
 class MessageForm(forms.ModelForm):

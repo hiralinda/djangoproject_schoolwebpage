@@ -1,0 +1,96 @@
+{% extends "hira/layout.html" %}
+
+{% block title %}
+    {% if user.is_student %}Student{% elif user.is_teacher%}Teacher{% endif %} Home
+{% endblock %}
+
+{% block body %}
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    </head>
+
+    <div class="container mx-auto px-4 py-8">
+        <header class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome, {{ user.username }}!</h1>
+            <h2 class="text-xl text-gray-600">{% if user.is_student %}Student{% elif user.is_teacher%}Teacher{% endif %} Dashboard</h2>
+        </header>
+
+        <div class="grid grid-cols-1 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <a href="{% url 'profile' user.username %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
+                    <i class="fas fa-user text-blue-600 text-2xl mr-3"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2">My Profile</h3>
+                        <p class="text-gray-600"></p>
+                    </div>
+                </a>
+                <a href="{% url 'edit_profile' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
+                    <i class="fas fa-edit text-green-600 text-2xl mr-3"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold text-green-600 mb-2">Edit Profile</h3>
+                        <p class="text-gray-600"></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {% if user.is_student %}
+            <a href="{% url 'browse_teachers' %}" class="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
+                <i class="fas fa-search text-blue-600 text-2xl mr-3"></i>
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-600 mb-2">Browse Teachers</h3>
+                    <p class="text-gray-600">Find and connect with qualified teachers in various subjects.</p>
+                </div>
+            </a>
+            {% elif user.is_teacher %}
+            <a href="{% url 'availability' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
+                <i class="fas fa-calendar-alt text-blue-600 text-2xl mr-3"></i>
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-600 mb-2">Manage Availability</h3>
+                    <p class="text-gray-600">Update your weekly availabilities</p>
+                </div>
+            </a>
+            {% endif %}
+            <a href="{% url 'inbox' %}" class="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
+                <i class="fas fa-inbox text-green-600 text-2xl mr-3"></i>
+                <div>
+                    <h3 class="text-xl font-semibold text-green-600 mb-2">Inbox</h3>
+                    <p class="text-gray-600">Check your messages and communicate with your {% if user.is_student %}teachers{% elif user.is_teacher %}students{% endif %}</p>
+                </div>
+            </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <a href="{% url 'scheduled_classes' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
+                <i class="fas fa-calendar-check text-blue-600 text-2xl mr-3"></i>
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-600 mb-2">Upcoming classes</h3>
+                    <p class="text-gray-600">Check your class history and upcoming classes.</p>
+                </div>
+            </a>
+        
+            {% if user.is_teacher %}
+            <a href="{% url 'schedule_class' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
+                <i class="fas fa-calendar-plus text-green-600 text-2xl mr-3"></i>
+                <div>
+                    <h3 class="text-xl font-semibold text-green-600 mb-2">Schedule a new class</h3>
+                    <p class="text-gray-600">Schedule a new class with one of your students.</p>
+                </div>
+            </a>
+            {% endif %}
+        
+            {% comment %} <div onclick="document.getElementById('logout-form').submit()" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 cursor-pointer flex items-center">
+                <form id="logout-form" action="{% url 'logout' %}" method="post" class="h-full">
+                    {% csrf_token %}
+                    <button type="submit" class="hidden"></button>
+                    <i class="fas fa-sign-out-alt text-red-600 text-2xl mr-3"></i>
+                    <div>
+                        <h3 class="text-xl font-semibold text-red-600 mb-2">Logout</h3>
+                        <p class="text-gray-600">Log out of your account.</p>
+                    </div>
+                </form>
+            </div> {% endcomment %}
+        </div>
+        
+{% endblock %}

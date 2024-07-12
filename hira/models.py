@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
         ('student', 'Student'),
         ('teacher', 'Teacher'),
     ]
-    # email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True)
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
     google_credentials = models.JSONField(null=True, blank=True)
     google_email = models.CharField(max_length=100, null=True, unique=True)
@@ -40,12 +40,12 @@ class Profile(models.Model):
         ('UG', 'Undergraduate'),
         ('PG', 'Postgraduate'),
     ]
-
+    name = models.CharField(max_length=100, blank=True)
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True)
-    # profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     languages = models.CharField(max_length=100, choices=LANGUAGE_CHOICES, blank=True)
-    # google_credentials = jsonfield(null=True, blank=True)
+
     
 
     # Teacher-specific fields

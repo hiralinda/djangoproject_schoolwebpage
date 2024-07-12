@@ -13,10 +13,7 @@ def index(request):
 
 def home(request):
     if request.user.is_authenticated:
-        if request.user.is_teacher:
-            return render(request, 'hira/teacher_home.html')
-        elif request.user.is_student:
-            return render(request, 'hira/student_home.html')
+        return render(request, 'hira/home.html')
 
 def signup(request):
     if request.method == 'POST':
@@ -40,14 +37,16 @@ def custom_logout(request):
 
 @login_required
 def edit_profile(request):
+
     profile = get_object_or_404(Profile, user=request.user)
     if request.method == 'POST':
-        form = ProfileUpdateForm(request.POST, instance=profile)
+        form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
             form.save()
             return redirect('profile', username=request.user.username)
+            
     else:
-        form = ProfileUpdateForm(instance=profile)
+        form = ProfileUpdateForm(instance=request.user.profile)
     return render(request, 'hira/edit_profile.html', {'form': form})
 
 def profile_view(request, username):

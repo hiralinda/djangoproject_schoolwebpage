@@ -1,11 +1,17 @@
-clean edit profile fields for student/ teacher
+clean edit profile fields for student/ teacher ok
 
-upload picture profile
+upload picture profile ok 
 
-insert name and last name on edit profile
+insert name and last name on edit profile ok 
 
-carroussel with different sizes
+carroussel with different sizes ok?
 
-error message red
+error message red ok 
 
 just populate the text when click 'contact'
+
+fix language input ok
+
+inbox notification
+
+school little logo
