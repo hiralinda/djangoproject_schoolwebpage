@@ -6,15 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 
-# Create your views here.
-# request -> response
-# request handler
-
 def index(request):
     teachers = CustomUser.objects.filter(user_type='teacher')
     context = {'teachers': teachers}
     return render(request, 'hira/index.html', context)
-
 
 def home(request):
     if request.user.is_authenticated:
@@ -29,7 +24,7 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')  # Redirect to home page or another page after successful sign-up
+            return redirect('home') 
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
@@ -40,8 +35,7 @@ class CustomLoginView(LoginView):
 
 def custom_logout(request):
     if request.method == 'POST' or request.method == 'GET':
-        logout(request)
-        
+        logout(request) 
         return redirect('home')  
 
 @login_required
@@ -148,3 +142,238 @@ def availability_view(request):
 #     availability = get_object_or_404(Availability, profile=request.user.profile, day=day)
 #     availability.delete()
 #     return redirect('availability')
+
+import os
+from django.shortcuts import redirect, render
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
+from django.conf import settings
+from django.urls import reverse 
+
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+def authorize(request):
+    flow = Flow.from_client_config({
+        "web": {
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+            "redirect_uris": [settings.GOOGLE_REDIRECT_URI],
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token"
+        }
+    }, scopes=SCOPES)
+
+    flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
+
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true')
+    
+    print(authorization_url)
+    request.session['state'] = state
+    # print(state)
+    return redirect(authorization_url)
+
+@login_required
+def oauth2callback(request):
+    state = request.GET.get('state')
+    code = request.GET.get('code')
+    scope = request.GET.get('scope')
+    flow = Flow.from_client_config({
+        "web": {
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+            "redirect_uris": [settings.GOOGLE_REDIRECT_URI],
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token"
+        }
+    }, scopes=SCOPES, state=state)
+    
+    flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
+
+    authorization_response = request.build_absolute_uri()
+    print("authorization_response", authorization_response)
+    flow.fetch_token(authorization_response=authorization_response)
+
+    credentials = flow.credentials
+    service = build('calendar', 'v3', credentials=credentials)
+    profile = service.calendarList().get(calendarId='primary').execute()
+    request.user.google_email = profile['id']
+
+    if CustomUser.objects.filter(google_email=request.user.google_email).exists():
+        flow = Flow.from_client_config({
+        "web": {
+            "client_id": settings.GOOGLE_CLIENT_ID,
+            "client_secret": settings.GOOGLE_CLIENT_SECRET,
+            "redirect_uris": [settings.GOOGLE_REDIRECT_URI],
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token"
+        }
+    }, scopes=SCOPES)
+        
+        flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
+        authorization_url, _  = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true',
+        prompt='select_account'
+    )
+        
+
+        return redirect(authorization_url)
+        
+    if not request.user.google_credentials:
+        request.user.google_credentials = {
+            'token': credentials.token,
+            'refresh_token': credentials.refresh_token,
+            'token_uri': credentials.token_uri,
+            'client_id': credentials.client_id,
+            'client_secret': credentials.client_secret,
+            'scopes': credentials.scopes,
+        }
+    request.session['credentials'] = {
+        'token': credentials.token,
+        'refresh_token': credentials.refresh_token,
+        'token_uri': credentials.token_uri,
+        'client_id': credentials.client_id,
+        'client_secret': credentials.client_secret,
+        'scopes': credentials.scopes
+    }
+    request.user.save()
+    return redirect('schedule_class')
+
+
+from datetime import datetime, timedelta
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from django.shortcuts import render, redirect
+from datetime import datetime, timedelta
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+from django.shortcuts import render, redirect
+from .models import Message, CustomUser  # Adjust the import based on your project structure
+
+from datetime import datetime, timedelta
+from django.shortcuts import render, redirect
+from .models import ClassSchedule, Message, CustomUser  # Adjust the import based on your project structure
+
+def schedule_class(request):
+    if 'credentials' not in request.session and not request.user.google_credentials:
+        return redirect('authorize')
+    
+    if request.user.google_credentials:
+        credentials = Credentials(**request.user.google_credentials)
+        service = build('calendar', 'v3', credentials=credentials)
+
+        if request.method == 'POST':
+        # Process the form data
+            start_date = request.POST['start_date']
+            start_time = request.POST['start_time']
+            start_datetime = f"{start_date}T{start_time}:00"
+            end_datetime = (datetime.strptime(start_datetime, '%Y-%m-%dT%H:%M:%S') + timedelta(minutes=50)).strftime('%Y-%m-%dT%H:%M:%S')
+            
+            recurrence_options = {
+                'one_time': '',
+                'daily': 'RRULE:FREQ=DAILY',
+                'twice_a_week': 'RRULE:FREQ=WEEKLY;BYDAY=MO,TH',
+                'weekly': 'RRULE:FREQ=WEEKLY',
+                
+            }
+            recurrence = recurrence_options.get(request.POST['recurrence'], 'RRULE:FREQ=DAILY')
+            
+            # attendees = CustomUser.objects.filter(email__in=request.POST.getlist('attendees'))
+            attendees_ids = request.POST.getlist('attendees')
+            attendees = CustomUser.objects.filter(id__in=attendees_ids)
+            
+            event_db = ClassSchedule.objects.create(
+                summary=request.POST['summary'],
+                location=request.POST['location'],
+                description=request.POST['description'],
+                start_datetime=start_datetime,
+                end_datetime=end_datetime,
+                teacher=request.user
+            )
+            event_db.attendees.set(attendees)
+            event_db.save()
+
+            event = {
+                'summary': request.POST['summary'],
+                'location': request.POST['location'],
+                'description': request.POST['description'],
+                'start': {
+                    'dateTime': start_datetime,
+                    'timeZone': request.POST['timezone'],
+                },
+                'end': {
+                    'dateTime': end_datetime,
+                    'timeZone': request.POST['timezone'],
+                },
+                'recurrence': [recurrence],
+                # 'attendees': [
+                #     {'email': attendee.email} for attendee in attendees
+                # ],
+            }
+
+            event = service.events().insert(calendarId='primary', body=event).execute()
+            
+            return redirect('scheduled_classes')
+        
+    # If it's a GET request, render the form with default values
+    received_messages = Message.objects.filter(receiver=request.user)
+    students = CustomUser.objects.filter(id__in=received_messages.values_list('sender', flat=True), user_type='student')
+    recurrence_options = {
+                'one_time': '',
+                'daily': 'RRULE:FREQ=DAILY',
+                'twice_a_week': 'RRULE:FREQ=WEEKLY;BYDAY=MO,TH',
+                'weekly': 'RRULE:FREQ=WEEKLY',
+                'weeklyyy': 'RRULE:FREQ=WEEKLY'
+            }
+   
+    default_start_date = datetime.now().strftime('%Y-%m-%d')
+    default_event = {
+        'summary': 'Class Scheduled',
+        'location': 'Online',
+        'description': 'A class scheduled using the Django apap.',
+        'start': {
+            'dateTime': datetime.now().strftime('%Y-%m-%dT10:00:00-07:00'),
+            'timeZone': 'America/Los_Angeles',
+        },
+        'end': {
+            'dateTime': (datetime.now() + timedelta(minutes=50)).strftime('%Y-%m-%dT10:50:00-07:00'),
+            'timeZone': 'America/Los_Angeles',
+        },
+        'recurrence': [recurrence_options.get('')],
+        'attendees': [],
+    }
+
+    
+    return render(request, 'hira/schedule_class.html', {'event': default_event, 'default_start_date': default_start_date, 'students': students})
+
+from datetime import datetime
+from django.shortcuts import render, redirect
+from .models import ClassSchedule  # Adjust the import based on your project structure
+
+def scheduled_classes(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    # Fetch the upcoming classes for the current student
+    now = datetime.now()
+    # user_email = request.user.email
+    user_id = request.user.id
+
+    student_classes = ClassSchedule.objects.filter(
+        attendees__in=[request.user],
+        start_datetime__gte=now
+    ).order_by('start_datetime')
+
+    teacher_classes = ClassSchedule.objects.filter(
+        teacher=request.user,
+        start_datetime__gte=now
+    ).order_by('start_datetime')
+
+    return render(request, 'hira/scheduled_classes.html', {
+        'student_classes': student_classes,
+        'teacher_classes': teacher_classes
+    })

@@ -22,7 +22,7 @@
             {% if form.non_field_errors %}
               <div class="form-group non-field-errors">
                 {% for error in form.non_field_errors %}
-                  <p class="error">{{ error }}</p>
+                  <p class="error-message">{{ error }}</p>
                 {% endfor %}
               </div>
             {% endif %}

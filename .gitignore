@@ -1,0 +1,5 @@
+djangoproject/settings.py
+djangoproject/__pycache__/**/*
+hira/__pycache__/**/*
+credentials.yaml
+db.sqlite3

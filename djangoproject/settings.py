@@ -138,3 +138,18 @@ STATIC_URL = 'hira/static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+import os
+SCOPES = ['https://www.googleapis.com/auth/calendar']
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+import yaml
+
+data = None
+with open('credentials.yaml', 'r') as file:
+    data = yaml.safe_load(file)
+
+GOOGLE_CLIENT_ID = data['GOOGLE_CLIENT_ID']
+GOOGLE_CLIENT_SECRET = data['GOOGLE_CLIENT_SECRET']
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://127.0.0.1:8000/hira/oauth2callback/')
+

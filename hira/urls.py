@@ -24,4 +24,10 @@ urlpatterns = [
     path('send_message/<int:user_id>/', views.send_message, name='send_message'),
     path('availability/', views.availability_view, name='availability'),
     # path('availability/delete/<int:availability_id>/', views.delete_availability, name='delete_availability'),
+    path('authorize/', views.authorize, name='authorize'),
+    path('oauth2callback/', views.oauth2callback, name='oauth2callback'),
+    path('schedule/', views.schedule_class, name='schedule_class'),
+    path('scheduled_classes/', views.scheduled_classes, name='scheduled_classes'),
+    
+
 ]

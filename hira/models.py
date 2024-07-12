@@ -1,13 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth import get_user_model
+# import jsonfield 
 
 class CustomUser(AbstractUser):
     USER_TYPES = [
         ('student', 'Student'),
         ('teacher', 'Teacher'),
     ]
+    # email = models.EmailField(unique=True)
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
+    google_credentials = models.JSONField(null=True, blank=True)
+    google_email = models.CharField(max_length=100, null=True, unique=True)
 
     @property
     def is_teacher(self):
@@ -41,6 +45,8 @@ class Profile(models.Model):
     bio = models.TextField(blank=True)
     # profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     languages = models.CharField(max_length=100, choices=LANGUAGE_CHOICES, blank=True)
+    # google_credentials = jsonfield(null=True, blank=True)
+    
 
     # Teacher-specific fields
     certifications = models.TextField(blank=True, help_text="List your certifications, separated by commas")
@@ -92,3 +98,16 @@ class Availability(models.Model):
 
     def __str__(self):
         return f"{self.profile.user.username}'s availability on {self.get_day_display()}"
+    
+
+class ClassSchedule(models.Model):
+    summary = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
+    description = models.TextField()
+    start_datetime = models.DateTimeField()
+    end_datetime = models.DateTimeField()
+    attendees = models.ManyToManyField(User, related_name='class_schedules')  
+    teacher = models.ForeignKey(User, related_name='class_schedules_as_teacher', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.summary
