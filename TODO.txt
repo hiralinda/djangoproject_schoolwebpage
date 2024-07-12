@@ -8,10 +8,12 @@ carroussel with different sizes ok?
 
 error message red ok 
 
-just populate the text when click 'contact'
+just populate the text when click 'contact' ok
 
 fix language input ok
 
 inbox notification
 
 school little logo
+
+retrieve user's name instead of username for the inbox

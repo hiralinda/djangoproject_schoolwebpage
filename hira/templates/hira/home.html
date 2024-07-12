@@ -25,9 +25,9 @@
                     </div>
                 </a>
                 <a href="{% url 'edit_profile' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
-                    <i class="fas fa-edit text-green-600 text-2xl mr-3"></i>
+                    <i class="fas fa-edit text-blue-600 text-2xl mr-3"></i>
                     <div>
-                        <h3 class="text-xl font-semibold text-green-600 mb-2">Edit Profile</h3>
+                        <h3 class="text-xl font-semibold text-blue-600 mb-2">Edit Profile</h3>
                         <p class="text-gray-600"></p>
                     </div>
                 </a>
@@ -53,9 +53,9 @@
             </a>
             {% endif %}
             <a href="{% url 'inbox' %}" class="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
-                <i class="fas fa-inbox text-green-600 text-2xl mr-3"></i>
+                <i class="fas fa-inbox text-blue-600 text-2xl mr-3"></i>
                 <div>
-                    <h3 class="text-xl font-semibold text-green-600 mb-2">Inbox</h3>
+                    <h3 class="text-xl font-semibold text-blue-600 mb-2">Inbox</h3>
                     <p class="text-gray-600">Check your messages and communicate with your {% if user.is_student %}teachers{% elif user.is_teacher %}students{% endif %}</p>
                 </div>
             </a>
@@ -72,9 +72,9 @@
         
             {% if user.is_teacher %}
             <a href="{% url 'schedule_class' %}" class="block p-6 mt-2 bg-white rounded-lg shadow-md hover:shadow-lg transition duration-300 flex items-center">
-                <i class="fas fa-calendar-plus text-green-600 text-2xl mr-3"></i>
+                <i class="fas fa-calendar-plus text-blue-600 text-2xl mr-3"></i>
                 <div>
-                    <h3 class="text-xl font-semibold text-green-600 mb-2">Schedule a new class</h3>
+                    <h3 class="text-xl font-semibold text-blue-600 mb-2">Schedule a new class</h3>
                     <p class="text-gray-600">Schedule a new class with one of your students.</p>
                 </div>
             </a>

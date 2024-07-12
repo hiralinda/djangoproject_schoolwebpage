@@ -1,10 +1,21 @@
+# Standard Library Imports
+from datetime import datetime, timedelta
+import os
+
+# Third-Party Imports
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
-from .forms import CustomUserCreationForm, ProfileUpdateForm, AvailabilityForm
-from .models import Profile, CustomUser, Message, Availability
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import Flow
+from googleapiclient.discovery import build
+
+# Local Imports
+from .models import Profile, CustomUser, Message, Availability, ClassSchedule
+from .forms import CustomUserCreationForm, ProfileUpdateForm, AvailabilityForm
+from django.conf import settings
 
 def index(request):
     teachers = CustomUser.objects.filter(user_type='teacher')
@@ -67,7 +78,7 @@ def inbox(request, user_id=None):
     conversations = []
     messages = Message.objects.filter(sender=request.user) | Message.objects.filter(receiver=request.user)
     conversations_dict = {}
-    
+
     for message in messages:
         if message.sender == request.user:
             participant = message.receiver
@@ -82,12 +93,16 @@ def inbox(request, user_id=None):
     conversations = list(conversations_dict.values())
 
     active_conversation = None
+    default_message = None
     if user_id:
         active_user = get_object_or_404(CustomUser, id=user_id)
         active_conversation = {
             'participant': active_user,
             'messages': messages.filter(sender=active_user) | messages.filter(receiver=active_user).order_by('timestamp')
         }
+        # Set default message only when rendering the form
+        if request.method == 'POST':
+            default_message = "Hi, I would like to contact you."  # Default message to pre-fill the input field
 
     if request.method == 'POST':
         message_text = request.POST.get('message')
@@ -95,22 +110,11 @@ def inbox(request, user_id=None):
             Message.objects.create(sender=request.user, receiver=active_conversation['participant'], message=message_text)
             return redirect('inbox', user_id=active_conversation['participant'].id)
 
-    return render(request, 'hira/inbox.html', {'conversations': conversations, 'active_conversation': active_conversation})
-@login_required
-def send_message(request, user_id):
-    recipient = get_object_or_404(CustomUser, id=user_id)
-    
-    if request.user.is_teacher:
-        return redirect('profile', user_id=user_id)
-    
-    if request.method == 'POST':
-        message_text = "Hi, I would like to contact you."  # Initial message when student clicks "Contact"
-        Message.objects.create(sender=request.user, receiver=recipient, message=message_text)
-        
-        return redirect('inbox', user_id=recipient.id)
-
-    return redirect('profile', user_id=user_id)
-
+    return render(request, 'hira/inbox.html', {
+        'conversations': conversations,
+        'active_conversation': active_conversation,
+        'default_message': default_message
+    })
 
 @login_required
 def availability_view(request):
@@ -136,19 +140,8 @@ def availability_view(request):
         'day_choices': Availability.DAY_CHOICES,
     })
 
-# @login_required
-# def delete_availability(request, day):
-#     availability = get_object_or_404(Availability, profile=request.user.profile, day=day)
-#     availability.delete()
-#     return redirect('availability')
 
-import os
-from django.shortcuts import redirect, render
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import Flow
-from googleapiclient.discovery import build
-from django.conf import settings
-from django.urls import reverse 
+# API HANDLING
 
 SCOPES = ['https://www.googleapis.com/auth/calendar']
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -218,8 +211,7 @@ def oauth2callback(request):
         include_granted_scopes='true',
         prompt='select_account'
     )
-        
-
+    
         return redirect(authorization_url)
         
     if not request.user.google_credentials:
@@ -243,19 +235,6 @@ def oauth2callback(request):
     return redirect('schedule_class')
 
 
-from datetime import datetime, timedelta
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-from django.shortcuts import render, redirect
-from datetime import datetime, timedelta
-from google.oauth2.credentials import Credentials
-from googleapiclient.discovery import build
-from django.shortcuts import render, redirect
-from .models import Message, CustomUser  # Adjust the import based on your project structure
-
-from datetime import datetime, timedelta
-from django.shortcuts import render, redirect
-from .models import ClassSchedule, Message, CustomUser  # Adjust the import based on your project structure
 
 def schedule_class(request):
     if 'credentials' not in request.session and not request.user.google_credentials:
@@ -349,9 +328,6 @@ def schedule_class(request):
     
     return render(request, 'hira/schedule_class.html', {'event': default_event, 'default_start_date': default_start_date, 'students': students})
 
-from datetime import datetime
-from django.shortcuts import render, redirect
-from .models import ClassSchedule  # Adjust the import based on your project structure
 
 def scheduled_classes(request):
     if not request.user.is_authenticated:

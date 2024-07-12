@@ -8,7 +8,7 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Inbox</h1>
         
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden ">
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
                 <!-- Conversation List -->
                 <div class="md:col-span-1 lg:col-span-1 border-r border-gray-200">
@@ -47,7 +47,15 @@
                 <!-- Message Area -->
                 <div class="md:col-span-2 lg:col-span-3 flex flex-col h-[70vh]">
                     <div class="p-4 bg-gray-50 border-b border-gray-200">
-                        <h2 class="text-lg font-semibold text-gray-700">Messages</h2>
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-semibold text-gray-700">Messages</h2>
+                            {% if active_conversation %}
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-lg font-medium text-gray-800">Conversation with</span>
+                                    <span class="text-lg font-medium text-blue-600">{{ active_conversation.participant.username }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
                     <div id="message-container" class="flex-1 overflow-y-auto p-4 space-y-4" style="max-height: 50vh;">
                         {% if active_conversation %}
@@ -66,7 +74,9 @@
                     <div class="p-4 bg-gray-50 border-t border-gray-200">
                         <form method="post" class="flex space-x-2">
                             {% csrf_token %}
-                            <input type="text" name="message" autofocus placeholder="Type a message..." class="p-2 flex-1 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" required>
+                            <input type="text" name="message" autofocus placeholder="Type a message..."
+                                   class="p-2 flex-1 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                                   required value="{{ default_message|default:'' }}">
                             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                 Send
                             </button>
