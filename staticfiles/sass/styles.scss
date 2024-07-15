@@ -1,0 +1,232 @@
+$primary-color: #3b82f6; // Blue-500
+$primary-hover-color: #2563eb; // Blue-600
+$background-color: #111827; // Gray-900
+$container-bg: #1f2937; // Gray-800
+$white: #ffffff;
+$gray-300: #d1d5db;
+$gray-500: #6b7280;
+$gray-700: #374151;
+$red-600: #dc2626;
+// Mixins
+@mixin transition($property: all, $duration: 0.3s, $timing: ease) {
+  transition: $property $duration $timing;
+}
+
+@mixin glow-effect($color: $primary-color, $spread: 5px) {
+  box-shadow: 0 0 $spread $color;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+@mixin glowing-border {
+  background: linear-gradient(90deg, $primary-color, $primary-hover-color, $primary-color);
+  background-size: 200% 100%;
+  animation: glowing-line 3s infinite;
+}
+
+// Feature cards
+.feature-card {
+  background-color: $container-bg;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    @include glow-effect($primary-color, 10px);
+    transform: translateY(-5px);
+  }
+}
+
+.section-separator {
+  width: 100%;
+  // max-width: 200px;
+  //margin: 2rem auto;
+  @extend .glowing-line;
+}
+
+.nav-link {
+  color: $gray-300;
+  transition: color 0.3s ease-in-out;
+
+  &:hover {
+    color: $white;
+    text-shadow: 0 0 5px $primary-color;
+  }
+}
+
+// Navbar styles
+
+@keyframes navbar-glow {
+  0% {
+    box-shadow: 0 2px 5px rgba($primary-color, 0.5);
+  }
+  50% {
+    box-shadow: 0 2px 20px rgba($primary-color, 0.8);
+  }
+  100% {
+    box-shadow: 0 2px 5px rgba($primary-color, 0.5);
+  }
+}
+
+.navbar-glow {
+  // position: relative;
+  
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: $primary-color;
+  }
+
+  &::before {
+    top: 0;
+  }
+
+  &::after {
+    bottom: 0;
+  }
+
+  &::before,
+  &::after {
+    animation: navbar-glow 3s infinite;
+  }
+}
+.hamburger {
+    cursor: pointer;
+    
+    .bar {
+      display: block;
+      width: 25px;
+      height: 3px;
+      margin: 5px auto;
+      background-color: white;
+      @include transition;
+    }
+  
+    &.active {
+      .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+      }
+      .bar:nth-child(2) {
+        opacity: 0;
+      }
+      .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+      }
+    }
+  }
+  
+  .mobile-menu {
+    @include transition(max-height);
+    max-height: 0;
+    overflow: hidden;
+    
+    &.active {
+      max-height: 300px;
+    }
+  }
+  
+
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 0 0 0 rgba($primary-color, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba($primary-color, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba($primary-color, 0);
+    }
+  }
+  
+  .cta-button {
+    background-color: $primary-color;
+    color: $white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    animation: pulse-glow 2s infinite;
+  
+    &:hover {
+      background-color: $primary-hover-color;
+      transform: scale(1.05);
+    }
+  }
+
+@keyframes glowing-line {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes glowing-border   {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.glowing-line {
+  height: 2px;
+  background: linear-gradient(90deg, $primary-color, $primary-hover-color, $primary-color);
+  background-size: 200% 100%;
+  animation: glowing-line 3s infinite;
+}
+
+.glowing-border {
+  @include glowing-border;
+}
+
+
+
+// teacher section
+
+.teacher-carousel {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.teacher-card {
+  margin: 0 15px;
+  padding: 2px;
+  border-radius: 8px;
+  @extend .glowing-border;
+}
+
+.teacher-card-inner {
+  background-color: $container-bg;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+}
+
+.teacher-avatar {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 15px;
+}
+
+.view-profile-btn {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: $primary-color;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
