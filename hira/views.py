@@ -86,11 +86,20 @@ def inbox(request, user_id=None):
             participant = message.sender
 
         if participant not in conversations_dict:
-            conversations_dict[participant] = {'participant': participant, 'last_message': message.message}
+            conversations_dict[participant] = {
+                'participant': participant,
+                'last_message': message.message,
+                'last_message_time': message.timestamp,
+                'profile_name': participant.profile.name,
+                'profile_picture': participant.profile.profile_picture.url if participant.profile.profile_picture else None,
+                'unread': not message.read and message.receiver == request.user
+            }
         else:
             conversations_dict[participant]['last_message'] = message.message
+            conversations_dict[participant]['last_message_time'] = message.timestamp
+            conversations_dict[participant]['unread'] = conversations_dict[participant]['unread'] or (not message.read and message.receiver == request.user)
 
-    conversations = list(conversations_dict.values())
+    conversations = sorted(conversations_dict.values(), key=lambda x: x['last_message_time'], reverse=True)
 
     active_conversation = None
     default_message = None
@@ -98,16 +107,22 @@ def inbox(request, user_id=None):
         active_user = get_object_or_404(CustomUser, id=user_id)
         active_conversation = {
             'participant': active_user,
-            'messages': messages.filter(sender=active_user) | messages.filter(receiver=active_user).order_by('timestamp')
+            'messages': messages.filter(sender=active_user) | messages.filter(receiver=active_user).order_by('timestamp'),
+            'profile_name': active_user.profile.name,
+            'profile_picture': active_user.profile.profile_picture.url if active_user.profile.profile_picture else None
         }
-        # Set default message only when rendering the form
+
+        active_conversation['messages'].filter(receiver=request.user, read=False).update(read=True)
+        unread_messages = active_conversation['messages'].filter(receiver=request.user, read=False)
+        unread_messages.update(read=True)
+
         if request.method == 'POST':
-            default_message = "Hi, I would like to contact you."  # Default message to pre-fill the input field
+            default_message = "Hi, I would like to contact you."
 
     if request.method == 'POST':
         message_text = request.POST.get('message')
         if message_text and active_conversation:
-            Message.objects.create(sender=request.user, receiver=active_conversation['participant'], message=message_text)
+            Message.objects.create(sender=request.user, receiver=active_conversation['participant'], message=message_text, read=False)
             return redirect('inbox', user_id=active_conversation['participant'].id)
 
     return render(request, 'hira/inbox.html', {

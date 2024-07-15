@@ -9,7 +9,7 @@
 
         <div class="container mx-auto px-4 py-8">
             <header class="mb-8">
-                <h1 class="text-2xl font-semibold mb-4 text-indigo-600">{{ user.username }}'s upcoming classes</h1>
+                <h1 class="text-2xl font-semibold mb-4 text-indigo-600">{{ user.profile.name }}'s upcoming classes</h1>
             </header>
         {% now "Y-m-d" as current_date %}
 
@@ -36,7 +36,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-gray-600">No upcoming classes found as a student.</p>
+                <p class="text-gray-600">No upcoming classes found.</p>
             {% endif %}
         </div>
         {% else %}
@@ -70,7 +70,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-gray-600">No upcoming classes found as a teacher.</p>
+                <p class="text-gray-600">No upcoming classes found.</p>
             {% endif %}
         </div>
     </div>

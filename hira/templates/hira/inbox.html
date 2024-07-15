@@ -21,16 +21,20 @@
                             <a href="{% url 'inbox' conversation.participant.id %}">
                                 <div class="flex items-center space-x-3">
                                     <div class="flex-shrink-0">
+                                        {% if conversation.profile_picture %}
+                                        <img class="w-10 h-10 rounded-full" src="{{ conversation.profile_picture }}" alt="{{ conversation.profile_name }}">
+                                        {% else %}
                                         <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
                                             {{ conversation.participant.username|slice:":1"|upper }}
                                         </div>
+                                        {% endif %}
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">
-                                            {{ conversation.participant.username }}
+                                    <div class="flex-1 min-w-0 overflow-hidden">
+                                        <p class="text-sm sm:text-base font-small medium truncate {% if conversation.unread %}font-medium font-semibold text-gray-900{% else %}text-gray-700{% endif %}">
+                                            {{ conversation.profile_name }}
                                         </p>
-                                        <p class="text-sm text-gray-500 truncate">
-                                            {{ conversation.last_message|slice:":50" }}
+                                        <p class="mt-1 text-xs sm:text-sm truncate {% if conversation.unread %}font-medium font-semibold text-gray-900{% else %}text-gray-500{% endif %}">
+                                            {{ conversation.last_message|truncatechars:50 }}
                                         </p>
                                     </div>
                                 </div>
@@ -50,10 +54,14 @@
                         <div class="flex items-center justify-between">
                             <h2 class="text-xl font-semibold text-gray-700">Messages</h2>
                             {% if active_conversation %}
-                                <div class="flex items-center space-x-2">
-                                    <span class="text-lg font-medium text-gray-800">Conversation with</span>
-                                    <span class="text-lg font-medium text-blue-600">{{ active_conversation.participant.username }}</span>
-                                </div>
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+                                <span class="text-base sm:text-lg font-medium text-gray-800">Conversation with</span>
+                                <span class="text-base sm:text-lg font-medium text-blue-600 break-all">
+                                    <a href="{% url 'profile' active_conversation.participant.username %}" class="hover:underline">
+                                        {{ active_conversation.profile_name }}
+                                    </a>
+                                </span>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
@@ -92,6 +100,8 @@
             if (messageContainer) {
                 messageContainer.scrollTop = messageContainer.scrollHeight;
             }
+
         });
     </script>
+    
 {% endblock %}
