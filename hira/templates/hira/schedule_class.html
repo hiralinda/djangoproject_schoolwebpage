@@ -5,15 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    {% if recently_scheduled_class %}
-    <div class="max-w-2xl mx-auto bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-lg shadow-md" role="alert">
-        <p class="font-bold">Class Successfully Scheduled!</p>
-        <p>Summary: {{ recently_scheduled_class.summary }}</p>
-        <p>Date: {{ recently_scheduled_class.start_date }}</p>
-        <p>Time: {{ recently_scheduled_class.start_time }}</p>
-        <p>Location: {{ recently_scheduled_class.location }}</p>
-    </div>
-    {% endif %}
+
 
     <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 class="text-3xl font-bold mb-6 text-gray-800">Schedule a Class</h1>
@@ -21,46 +13,61 @@
             {% csrf_token %}
             <div>
                 <label for="summary" class="block text-sm font-medium text-gray-700">Class Summary:</label>
-                <input type="text" id="summary" name="summary" value="{{ event.summary }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <input type="text" id="summary" name="summary" value="{{ event.summary }}" class="mt-1 p-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
             </div>
 
             <div>
                 <label for="location" class="block text-sm font-medium text-gray-700">Location:</label>
-                <input type="text" id="location" name="location" value="{{ event.location }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <input type="text" id="location" name="location" value="{{ event.location }}" class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
             </div>
 
             <div>
                 <label for="description" class="block text-sm font-medium text-gray-700">Description:</label>
-                <textarea id="description" name="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 h-32">{{ event.description }}</textarea>
+                <textarea id="description" name="description" class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 h-32">{{ event.description }}</textarea>
             </div>
 
             <div>
                 <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date:</label>
-                <input type="date" id="start_date" name="start_date" value="{{ default_start_date }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <input type="date" id="start_date" name="start_date" value="{{ default_start_date }}" required class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
             </div>
 
             <div>
                 <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time (HH:MM):</label>
-                <input type="time" id="start_time" name="start_time" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <input type="time" id="start_time" name="start_time" required class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
             </div>
 
             <div>
                 <label for="timezone" class="block text-sm font-medium text-gray-700">Time Zone:</label>
-                <input type="text" id="timezone" name="timezone" value="{{ event.start.timeZone }}" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <select name="timezone" id="timezone" required class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    {% for tz in timezones %}
+                        <option value="{{ tz }}" {% if tz == default_timezone %}selected{% endif %}>{{ tz }}</option>
+                    {% endfor %}
+                </select>
             </div>
 
-            <div>
+            {% comment %} <div>
+                <label for="timezone" class="block text-sm font-medium text-gray-700">Time Zone:</label>
+                <input type="text" id="timezone" name="timezone" value="{{ event.start.timeZone }}" required class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <select name="timezone" id="timezone">
+                {% for tz in timezones %}
+                    <option value="{{ tz }}" {% if tz == event.start.timeZone %}selected{% endif %}>{{ tz }}</option>
+                {% endfor %}
+            </select> {% endcomment %}
+
+            {% comment %} <div>
                 <label for="recurrence" class="block text-sm font-medium text-gray-700">Recurrence:</label>
-                <select id="recurrence" name="recurrence" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <select id="recurrence" name="recurrence" class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     <option value="daily">Daily</option>
                     <option value="twice_a_week">Twice a Week</option>
                     <option value="weekly">Weekly</option>
                 </select>
-            </div>
+            </div> {% endcomment %}
 
             <div>
                 <label for="attendees" class="block text-sm font-medium text-gray-700">Select a student:</label>
-                <select id="attendees" name="attendees" multiple class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <select id="attendees" name="attendees" multiple class="mt-1 p-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                     {% for student in students %}
                         <option value="{{ student.id }}">{{ student.username }}</option>
                     {% endfor %}
@@ -94,7 +101,18 @@
             let details = '';
             for (let [key, value] of formData.entries()) {
                 if (key !== 'csrfmiddlewaretoken') {
-                    details += `<p><strong>${key}:</strong> ${value}</p>`;
+                    const inputElement = this.elements[key];
+                    let label = key; // Default to key if label not found
+                    
+                    // Try to find the associated label
+                    const labelElement = this.querySelector(`label[for="${inputElement.id}"]`);
+                    if (labelElement) {
+                        label = labelElement.textContent.trim();
+                    } else if (inputElement.labels && inputElement.labels.length > 0) {
+                        label = inputElement.labels[0].textContent.trim();
+                    }
+                    
+                    details += `<p><strong>${label}</strong> ${value}</p>`;
                 }
             }
             document.getElementById('classDetails').innerHTML = details;

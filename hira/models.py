@@ -109,6 +109,7 @@ class ClassSchedule(models.Model):
     description = models.TextField()
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField()
+    timezone = models.CharField(max_length=50, default='UTC')
     attendees = models.ManyToManyField(User, related_name='class_schedules')  
     teacher = models.ForeignKey(User, related_name='class_schedules_as_teacher', on_delete=models.CASCADE)
 

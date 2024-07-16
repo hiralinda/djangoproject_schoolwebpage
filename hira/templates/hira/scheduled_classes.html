@@ -8,71 +8,75 @@
 {% block body %}
 
         <div class="container mx-auto px-4 py-8">
-            <header class="mb-8">
-                <h1 class="text-2xl font-semibold mb-4 text-indigo-600">{{ user.profile.name }}'s upcoming classes</h1>
-            </header>
+          
         {% now "Y-m-d" as current_date %}
-
+      
         {% if user.is_student %}
     
-            {% if student_classes %}
-                <div class="space-y-6">
-                    {% for event in student_classes %}
-                        <div class="bg-white shadow-md rounded-lg p-6 {% if event.start_datetime|date:"Y-m-d" < current_date %}border-l-4 border-gray-400{% else %}border-l-4 border-green-400{% endif %}">
-                            <h3 class="text-xl font-bold mb-2 text-gray-800">{{ event.summary }}</h3>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Status:</span> 
-                                {% if event.start_datetime|date:"Y-m-d" < current_date %}
-                                    <span class="text-gray-600">History</span>
-                                {% else %}
+        {% now "Y-m-d H:i:s" as current_datetime %}
+        {% if student_classes %}
+            <div class="space-y-6">
+                <h2 class="text-2xl font-bold mb-4">{{ user.profile.name }}'s Upcoming Classes</h2>
+                {% for event in student_classes %}
+                    {% with event_start=event.start_datetime|date:"Y-m-d H:i:s" %}
+                        {% if event_start >= current_datetime %}
+                            <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-green-400">
+                                <h3 class="text-xl font-bold mb-2 text-gray-800">{{ event.summary }}</h3>
+                                <p class="text-gray-600 mb-2"><span class="font-semibold">Status:</span> 
                                     <span class="text-green-600">Upcoming</span>
-                                {% endif %}
-                            </p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Location:</span> {{ event.location }}</p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Description:</span> {{ event.description }}</p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Start:</span> {{ event.start_datetime|date:"Y-m-d H:i:s" }}</p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">End:</span> {{ event.end_datetime|date:"Y-m-d H:i:s" }}</p>
-                            <p class="text-gray-600"><span class="font-semibold">Teacher:</span> {{ event.teacher.get_username }}</p>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="text-gray-600">No upcoming classes found.</p>
-            {% endif %}
+                                </p>
+                                <p class="text-gray-600 mb-2"><span class="font-semibold">Location:</span> {{ event.location }}</p>
+                                <p class="text-gray-600 mb-2"><span class="font-semibold">Description:</span> {{ event.description }}</p>
+                                <p class="text-gray-600 mb-2"><span class="font-semibold">Start:</span> {{ event.start_datetime|date:"Y-m-d H:i:s" }}</p>
+                                <p class="text-gray-600 mb-2"><span class="font-semibold">End:</span> {{ event.end_datetime|date:"Y-m-d H:i:s" }}</p>
+                                <p class="text-gray-600"><span class="font-semibold">Teacher:</span> {{ event.teacher.get_username }}</p>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% empty %}
+                    <p class="text-gray-600">No upcoming classes found.</p>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600">No classes found.</p>
+        {% endif %}
         </div>
         {% else %}
         <div>
           
-            {% if teacher_classes %}
-                <div class="space-y-6">
-                    {% for event in teacher_classes %}
-                        <div class="bg-white shadow-md rounded-lg p-6 {% if event.start_datetime|date:"Y-m-d" < current_date %}border-l-4 border-gray-400{% else %}border-l-4 border-green-400{% endif %}">
-                            <h3 class="text-xl font-bold mb-2 text-gray-800">{{ event.summary }}</h3>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Status:</span> 
-                                {% if event.start_datetime|date:"Y-m-d" < current_date %}
-                                    <span class="text-gray-600">History</span>
-                                {% else %}
-                                    <span class="text-green-600">Upcoming</span>
-                                {% endif %}
-                            </p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Location:</span> {{ event.location }}</p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Description:</span> {{ event.description }}</p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">Start:</span> {{ event.start_datetime|date:"Y-m-d H:i:s" }}</p>
-                            <p class="text-gray-600 mb-2"><span class="font-semibold">End:</span> {{ event.end_datetime|date:"Y-m-d H:i:s" }}</p>
-                            <div class="mt-4">
-                                <h4 class="font-semibold text-gray-700 mb-2">Attendees:</h4>
-                                <ul class="list-disc list-inside text-gray-600">
-                                    {% for attendee in event.attendees.all %}
-                                        <li>{{ attendee.get_username }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+            {% now "Y-m-d H:i:s" as current_datetime %}
+{% if teacher_classes %}
+    <div class="space-y-6">
+        <h2 class="text-2xl font-bold mb-4">{{ user.profile.name }}'s Upcoming Classes</h2>
+        {% for event in teacher_classes %}
+            {% with event_start=event.start_datetime|date:"Y-m-d H:i:s" %}
+                {% if event_start >= current_datetime %}
+                    <div class="bg-white shadow-md rounded-lg p-6 border-l-4 border-green-400">
+                        <h3 class="text-xl font-bold mb-2 text-gray-800">{{ event.summary }}</h3>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Status:</span> 
+                            <span class="text-green-600">Upcoming</span>
+                        </p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Location:</span> {{ event.location }}</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Description:</span> {{ event.description }}</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">Start:</span> {{ event.start_datetime|date:"Y-m-d H:i:s" }}</p>
+                        <p class="text-gray-600 mb-2"><span class="font-semibold">End:</span> {{ event.end_datetime|date:"Y-m-d H:i:s" }}</p>
+                        <div class="mt-4">
+                            <h4 class="font-semibold text-gray-700 mb-2">Attendees:</h4>
+                            <ul class="list-disc list-inside text-gray-600">
+                                {% for attendee in event.attendees.all %}
+                                    <li>{{ attendee.email }}</li>
+                                {% endfor %}
+                            </ul>
                         </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="text-gray-600">No upcoming classes found.</p>
-            {% endif %}
-        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        {% empty %}
+            <p class="text-gray-600">No upcoming classes found.</p>
+        {% endfor %}
     </div>
+{% else %}
+    <p class="text-gray-600">No classes found.</p>
+{% endif %}
     {% endif %}
 {% endblock %}

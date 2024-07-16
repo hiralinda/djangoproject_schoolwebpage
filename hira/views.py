@@ -250,6 +250,8 @@ def oauth2callback(request):
     return redirect('schedule_class')
 
 
+from django.utils import timezone
+import pytz
 
 def schedule_class(request):
     if 'credentials' not in request.session and not request.user.google_credentials:
@@ -258,24 +260,21 @@ def schedule_class(request):
     if request.user.google_credentials:
         credentials = Credentials(**request.user.google_credentials)
         service = build('calendar', 'v3', credentials=credentials)
-
+       
         if request.method == 'POST':
-        # Process the form data
+            # Process the form data
             start_date = request.POST['start_date']
             start_time = request.POST['start_time']
-            start_datetime = f"{start_date}T{start_time}:00"
-            end_datetime = (datetime.strptime(start_datetime, '%Y-%m-%dT%H:%M:%S') + timedelta(minutes=50)).strftime('%Y-%m-%dT%H:%M:%S')
+            selected_timezone = request.POST['timezone']
             
-            recurrence_options = {
-                'one_time': '',
-                'daily': 'RRULE:FREQ=DAILY',
-                'twice_a_week': 'RRULE:FREQ=WEEKLY;BYDAY=MO,TH',
-                'weekly': 'RRULE:FREQ=WEEKLY',
-                
-            }
-            recurrence = recurrence_options.get(request.POST['recurrence'], 'RRULE:FREQ=DAILY')
+            # Create a timezone-aware datetime object
+            local_tz = pytz.timezone(selected_timezone)
+            start_datetime = (datetime.strptime(f"{start_date} {start_time}", '%Y-%m-%d %H:%M'))
             
-            # attendees = CustomUser.objects.filter(email__in=request.POST.getlist('attendees'))
+            # # Convert to UTC for storage
+            # start_datetime_utc = start_datetime.astimezone(pytz.UTC)
+            # end_datetime_utc = start_datetime_utc + timedelta(minutes=50)
+            
             attendees_ids = request.POST.getlist('attendees')
             attendees = CustomUser.objects.filter(id__in=attendees_ids)
             
@@ -284,8 +283,9 @@ def schedule_class(request):
                 location=request.POST['location'],
                 description=request.POST['description'],
                 start_datetime=start_datetime,
-                end_datetime=end_datetime,
-                teacher=request.user
+                end_datetime=start_datetime + timedelta(minutes=50),
+                teacher=request.user,
+                timezone=selected_timezone
             )
             event_db.attendees.set(attendees)
             event_db.save()
@@ -295,17 +295,16 @@ def schedule_class(request):
                 'location': request.POST['location'],
                 'description': request.POST['description'],
                 'start': {
-                    'dateTime': start_datetime,
-                    'timeZone': request.POST['timezone'],
+                    'dateTime': start_datetime.isoformat(),
+                    'timeZone': selected_timezone,
                 },
                 'end': {
-                    'dateTime': end_datetime,
-                    'timeZone': request.POST['timezone'],
+                    'dateTime': (start_datetime + timedelta(minutes=50)).isoformat(),
+                    'timeZone': selected_timezone,
                 },
-                'recurrence': [recurrence],
-                # 'attendees': [
-                #     {'email': attendee.email} for attendee in attendees
-                # ],
+                'attendees': [
+                    {'email': attendee.email} for attendee in attendees
+                ],
             }
 
             event = service.events().insert(calendarId='primary', body=event).execute()
@@ -315,55 +314,47 @@ def schedule_class(request):
     # If it's a GET request, render the form with default values
     received_messages = Message.objects.filter(receiver=request.user)
     students = CustomUser.objects.filter(id__in=received_messages.values_list('sender', flat=True), user_type='student')
-    recurrence_options = {
-                'one_time': '',
-                'daily': 'RRULE:FREQ=DAILY',
-                'twice_a_week': 'RRULE:FREQ=WEEKLY;BYDAY=MO,TH',
-                'weekly': 'RRULE:FREQ=WEEKLY',
-                'weeklyyy': 'RRULE:FREQ=WEEKLY'
-            }
-   
-    default_start_date = datetime.now().strftime('%Y-%m-%d')
+
+    default_start_date = timezone.now().strftime('%Y-%m-%d')
+    default_start_time = timezone.now().strftime('%H:%M')
+    default_timezone = request.user.timezone if hasattr(request.user, 'timezone') else 'UTC'
+
+    timezones = pytz.common_timezones
     default_event = {
-        'summary': 'Class Scheduled',
+        'summary': 'HiraLearn Class',
         'location': 'Online',
-        'description': 'A class scheduled using the Django apap.',
-        'start': {
-            'dateTime': datetime.now().strftime('%Y-%m-%dT10:00:00-07:00'),
-            'timeZone': 'America/Los_Angeles',
-        },
-        'end': {
-            'dateTime': (datetime.now() + timedelta(minutes=50)).strftime('%Y-%m-%dT10:50:00-07:00'),
-            'timeZone': 'America/Los_Angeles',
-        },
-        'recurrence': [recurrence_options.get('')],
-        'attendees': [],
+        'description': 'A class scheduled with HiraLearn',
     }
+    return render(request, 'hira/schedule_class.html', {
+        'event': default_event,
+        'default_start_date': default_start_date,
+        'default_start_time': default_start_time,
+        'default_timezone': default_timezone,
+        'students': students,
+        'timezones': timezones
+    })
 
-    
-    return render(request, 'hira/schedule_class.html', {'event': default_event, 'default_start_date': default_start_date, 'students': students})
-
+from django.utils import timezone
 
 def scheduled_classes(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
-    # Fetch the upcoming classes for the current student
-    now = datetime.now()
-    # user_email = request.user.email
+    now = timezone.now()
     user_id = request.user.id
 
+    # Fetch all classes for the current student
     student_classes = ClassSchedule.objects.filter(
-        attendees__in=[request.user],
-        start_datetime__gte=now
+        attendees__in=[request.user]
     ).order_by('start_datetime')
 
+    # Fetch all classes for the current teacher
     teacher_classes = ClassSchedule.objects.filter(
-        teacher=request.user,
-        start_datetime__gte=now
+        teacher=request.user
     ).order_by('start_datetime')
+
 
     return render(request, 'hira/scheduled_classes.html', {
         'student_classes': student_classes,
-        'teacher_classes': teacher_classes
+        'teacher_classes': teacher_classes,
     })
