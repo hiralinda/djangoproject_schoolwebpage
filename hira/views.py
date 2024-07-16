@@ -251,33 +251,30 @@ def oauth2callback(request):
 
 
 from django.utils import timezone
-import pytz
+import pytz, random
 
 def schedule_class(request):
     if 'credentials' not in request.session and not request.user.google_credentials:
         return redirect('authorize')
-    
+
     if request.user.google_credentials:
         credentials = Credentials(**request.user.google_credentials)
         service = build('calendar', 'v3', credentials=credentials)
-       
+
         if request.method == 'POST':
             # Process the form data
             start_date = request.POST['start_date']
             start_time = request.POST['start_time']
             selected_timezone = request.POST['timezone']
-            
+
             # Create a timezone-aware datetime object
             local_tz = pytz.timezone(selected_timezone)
-            start_datetime = (datetime.strptime(f"{start_date} {start_time}", '%Y-%m-%d %H:%M'))
-            
-            # # Convert to UTC for storage
-            # start_datetime_utc = start_datetime.astimezone(pytz.UTC)
-            # end_datetime_utc = start_datetime_utc + timedelta(minutes=50)
-            
+            start_datetime = datetime.strptime(f"{start_date} {start_time}", '%Y-%m-%d %H:%M')
+            start_datetime = local_tz.localize(start_datetime)
+
             attendees_ids = request.POST.getlist('attendees')
             attendees = CustomUser.objects.filter(id__in=attendees_ids)
-            
+
             event_db = ClassSchedule.objects.create(
                 summary=request.POST['summary'],
                 location=request.POST['location'],
@@ -305,12 +302,26 @@ def schedule_class(request):
                 'attendees': [
                     {'email': attendee.email} for attendee in attendees
                 ],
+                'conferenceData': {
+                    'createRequest': {
+                        'requestId': 'random-string-' + str(random.randint(100000, 999999)),
+                        'conferenceSolutionKey': {
+                            'type': 'hangoutsMeet'
+                        }
+                    }
+                }
             }
 
-            event = service.events().insert(calendarId='primary', body=event).execute()
-            
+            event = service.events().insert(calendarId='primary', body=event, conferenceDataVersion=1).execute()
+
+            # Retrieve the Google Meet link
+            meet_link = event.get('hangoutLink')
+            if meet_link:
+                event_db.meet_link = meet_link
+                event_db.save()
+
             return redirect('scheduled_classes')
-        
+
     # If it's a GET request, render the form with default values
     received_messages = Message.objects.filter(receiver=request.user)
     students = CustomUser.objects.filter(id__in=received_messages.values_list('sender', flat=True), user_type='student')
@@ -334,7 +345,6 @@ def schedule_class(request):
         'timezones': timezones
     })
 
-from django.utils import timezone
 
 def scheduled_classes(request):
     if not request.user.is_authenticated:

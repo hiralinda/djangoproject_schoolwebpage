@@ -112,6 +112,7 @@ class ClassSchedule(models.Model):
     timezone = models.CharField(max_length=50, default='UTC')
     attendees = models.ManyToManyField(User, related_name='class_schedules')  
     teacher = models.ForeignKey(User, related_name='class_schedules_as_teacher', on_delete=models.CASCADE)
+    meet_link = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return self.summary
