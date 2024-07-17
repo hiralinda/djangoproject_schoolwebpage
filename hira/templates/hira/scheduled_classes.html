@@ -29,7 +29,13 @@
                                 <p class="text-gray-600 mb-2"><span class="font-semibold">Description:</span> {{ event.description }}</p>
                                 <p class="text-gray-600 mb-2"><span class="font-semibold">Start:</span> {{ event.start_datetime|date:"Y-m-d H:i:s" }}</p>
                                 <p class="text-gray-600 mb-2"><span class="font-semibold">End:</span> {{ event.end_datetime|date:"Y-m-d H:i:s" }}</p>
-                                <p class="text-gray-600"><span class="font-semibold">Teacher:</span> {{ event.teacher.get_username }}</p>
+                                <p class="text-gray-600 mb-2"><span class="font-semibold">Teacher:</span> {{ event.teacher.get_username }}</p>
+                                <p class="text-gray-600 mb-2">
+                                    <span class="font-semibold">Google Meet Link:</span> 
+                                    <a href="{{ event.meet_link }}" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700 underline">
+                                        {{ event.meet_link }}
+                                    </a>
+                                </p>
                             </div>
                         {% endif %}
                     {% endwith %}

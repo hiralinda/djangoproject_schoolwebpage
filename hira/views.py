@@ -27,14 +27,19 @@ def home(request):
         return render(request, 'hira/home.html')
 
 def signup(request):
+    # If user is already logged in, log them out
+    if request.user.is_authenticated:
+        logout(request)
+    
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home') 
+            return redirect('home')
     else:
         form = CustomUserCreationForm()
+    
     return render(request, 'registration/signup.html', {'form': form})
 
 class CustomLoginView(LoginView):
