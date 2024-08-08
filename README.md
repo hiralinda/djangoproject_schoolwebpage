@@ -1,12 +1,10 @@
 # Teacher-Student Django Platform
 
+This project is a comprehensive language school website built using Django, designed to facilitate the interaction between teachers and students. It was created as the [Final Project](https://cs50.harvard.edu/web/2020/projects/final/capstone/) for CS50's Web Programming with Python and JavaScript course. The platform offers distinct features for both user types, creating a seamless and efficient educational environment. 
+
 ## Video Preview
 
 [Video Link](https://youtu.be/Qk2ap_J89tg)
-
-## Description
-
-This project is a comprehensive language school website built using Django, designed to facilitate the interaction between teachers and students. It was created as the [Final Project](https://cs50.harvard.edu/web/2020/projects/final/capstone/) for CS50's Web Programming with Python and JavaScript course. The platform offers distinct features for both user types, creating a seamless and efficient educational environment. 
 
 ### Features
 
