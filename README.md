@@ -1,16 +1,45 @@
-# TEACHER-STUDENT DJANGO PLATFORM 
+# Teacher-Student Django Platform
 
-### Video Demo:  <URL https://youtu.be/Qk2ap_J89tg>
+## Video Preview
 
-## Description:
+[Video Link](https://youtu.be/Qk2ap_J89tg)
 
-This project is a comprehensive language school website built using Django, designed to facilitate the interaction between teachers and students. It was created as the Final Project for CS50's Web Programming with Python and JavaScript course. The platform offers distinct features for both user types, creating a seamless and efficient educational environment. 
+## Description
+
+This project is a comprehensive language school website built using Django, designed to facilitate the interaction between teachers and students. It was created as the [Final Project](https://cs50.harvard.edu/web/2020/projects/final/capstone/) for CS50's Web Programming with Python and JavaScript course. The platform offers distinct features for both user types, creating a seamless and efficient educational environment. 
 
 ### Features
 
 - User Registration and Authentication
 - User Types: Users can register as either students or teachers.
 - Authentication: Secure login and logout functionality using Django's authentication system.
+
+## Setup and Deployment
+
+### Installation
+
+This project was developed in Python version `3.10.5`.
+
+Clone the Repository: `git clone <repository-url>`
+
+Navigate to the Project Directory: ```cd teacher-student-django-platform```
+
+Install Dependencies: ```pip install -r requirements.txt```
+
+Configure Google API: Obtain credentials from Google Cloud Console and save them as credentials.json in the project directory.
+
+Apply Migrations: ```python manage.py migrate```
+
+Run the Development Server: ```python manage.py runserver```
+
+### Usage
+
++ Register as a Student or Teacher.
++ Update Your Profile with relevant information.
++ Browse Teacher Profiles (if logged in as a student).
++ Contact Teachers and start conversations.
++ Schedule Classes using Google Meet (if logged in as a teacher).
++ This platform aims to streamline the process of language learning by providing an easy-to-use interface for both students and teachers, ensuring effective communication and scheduling of lessons.
 
 ### User Profiles
 
@@ -120,34 +149,6 @@ For students, signing up allows them to browse through the profiles of signed-up
 
 ```requirements.txt``` Lists all the Python packages and their versions required to run the project. This file is used to install dependencies with pip.
 
-## Setup and Deployment
-
-### Installation
-
-This project was developed in Python version `3.10.5`.
-
-Clone the Repository: `git clone <repository-url>`
-
-Navigate to the Project Directory: ```cd teacher-student-django-platform```
-
-Install Dependencies: ```pip install -r requirements.txt```
-
-Configure Google API: Obtain credentials from Google Cloud Console and save them as credentials.json in the project directory.
-
-Apply Migrations: ```python manage.py migrate```
-
-Run the Development Server: ```python manage.py runserver```
-
-### Usage
-
-+ Register as a Student or Teacher.
-+ Update Your Profile with relevant information.
-+ Browse Teacher Profiles (if logged in as a student).
-+ Contact Teachers and start conversations.
-+ Schedule Classes using Google Meet (if logged in as a teacher).
-+ This platform aims to streamline the process of language learning by providing an easy-to-use interface for both students and teachers, ensuring effective communication and scheduling of lessons.
-
-
 ## Additional Information 
 
 Some potential features that I would like to implement on the project to improve it include:
@@ -159,3 +160,7 @@ Some potential features that I would like to implement on the project to improve
 - Inbox notification;
 - Pagination on browse teachers page and upcoming classes page;
 - Dark mode;
+
+---
+
+*[This project](https://cs50.harvard.edu/web/2020/projects/final/capstone/) was my Final Project for the CS50 Web Programming with Python and JavaScript course.*
