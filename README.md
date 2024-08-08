@@ -6,7 +6,7 @@ This project is a comprehensive language school website built using Django, desi
 
 [Video Link](https://youtu.be/Qk2ap_J89tg)
 
-### Features
+## Features
 
 - User Registration and Authentication
 - User Types: Users can register as either students or teachers.

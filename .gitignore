@@ -3,3 +3,4 @@ djangoproject/__pycache__/**/*
 hira/__pycache__/**/*
 credentials.yaml
 db.sqlite3
+media/
